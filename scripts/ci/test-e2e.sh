@@ -16,6 +16,9 @@ bun install
 echo "🎭 Installing Playwright browsers..."
 bunx playwright install chromium
 
+echo "🔨 Building project..."
+bun run build
+
 echo "🧪 Running E2E tests..."
 bun run test:e2e
 
