@@ -1,0 +1,334 @@
+---
+import { profile } from '../../data/profile';
+
+interface Props {
+  name?: string;
+  role?: string;
+  tagline?: string;
+  skills?: string[];
+}
+
+const {
+  name = profile.name,
+  role = profile.role,
+  tagline = profile.introductions[0],
+  skills = ['React', 'TypeScript', 'Next.js', 'Node.js', 'TailwindCSS'],
+} = Astro.props;
+
+const terminalLines = [
+  { cmd: 'whoami', output: name },
+  { cmd: 'cat role.txt', output: role },
+  { cmd: 'cat about.txt', output: tagline },
+  { cmd: 'ls skills/', output: skills.join('  ') },
+];
+
+const stats = [
+  {
+    label: '개발분야',
+    value: profile.field,
+    color: 'from-blue-500 to-blue-600',
+    textColor: 'text-blue-600 dark:text-blue-400',
+  },
+  {
+    label: '경력',
+    value: `${profile.careerYears}년+`,
+    color: 'from-emerald-500 to-emerald-600',
+    textColor: 'text-emerald-600 dark:text-emerald-400',
+  },
+  {
+    label: '프로젝트',
+    value: `${profile.projectCount}`,
+    color: 'from-amber-500 to-amber-600',
+    textColor: 'text-amber-600 dark:text-amber-400',
+  },
+  {
+    label: '기술스택',
+    value: `${profile.skillCount}+`,
+    color: 'from-purple-500 to-purple-600',
+    textColor: 'text-purple-600 dark:text-purple-400',
+  },
+];
+
+// Generate star positions
+const stars = Array.from({ length: 80 }, (_, i) => ({
+  id: i,
+  top: Math.random() * 100,
+  left: Math.random() * 100,
+  size: Math.random() * 2 + 1,
+  delay: Math.random() * 5,
+  duration: Math.random() * 3 + 2,
+}));
+
+const shootingStars = Array.from({ length: 6 }, (_, i) => ({
+  id: i,
+  top: Math.random() * 60,
+  left: Math.random() * 80,
+  delay: Math.random() * 8 + i * 2,
+  duration: Math.random() * 2 + 1.5,
+}));
+---
+
+<section
+  class="relative min-h-screen flex items-center overflow-hidden"
+>
+  {/* Light mode: soft pastel sky */}
+  <div class="absolute inset-0 bg-gradient-to-br from-blue-50/90 via-white to-indigo-50/80 dark:hidden"></div>
+
+  {/* Dark mode: space background */}
+  <div class="absolute inset-0 bg-[#0a0e1a] hidden dark:block"></div>
+
+  {/* Subtle gradient overlay - dark mode only */}
+  <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0e1a]/50 to-[#0a0e1a] hidden dark:block"></div>
+
+  {/* Grid pattern */}
+  <div class="absolute inset-0 opacity-[0.03] dark:opacity-[0.02]" style="background-image: linear-gradient(rgba(100,116,139,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(100,116,139,0.2) 1px, transparent 1px); background-size: 50px 50px;"></div>
+
+  {/* Stars - light mode: soft blue, dark mode: white */}
+  {
+    stars.map((star) => (
+      <div
+        class="absolute rounded-full bg-blue-300 dark:bg-white animate-twinkle"
+        style={{
+          top: `${star.top}%`,
+          left: `${star.left}%`,
+          width: `${star.size}px`,
+          height: `${star.size}px`,
+          animationDelay: `${star.delay}s`,
+          animationDuration: `${star.duration}s`,
+          opacity: Math.random() * 0.4 + 0.2,
+        }}
+      />
+    ))
+  }
+
+  {/* Shooting stars - light mode: blue tint, dark mode: white */}
+  {
+    shootingStars.map((star) => (
+      <div
+        class="absolute shooting-star"
+        style={{
+          top: `${star.top}%`,
+          left: `${star.left}%`,
+          animationDelay: `${star.delay}s`,
+          animationDuration: `${star.duration}s`,
+        }}
+      >
+        <div class="w-20 h-[1px] bg-gradient-to-r from-blue-400/60 dark:from-white/80 to-transparent" />
+      </div>
+    ))
+  }
+
+  {/* Floating particles - light mode: soft indigo, dark mode: blue */}
+  {
+    Array.from({ length: 20 }, (_, i) => (
+      <div
+        class="absolute rounded-full bg-indigo-300/30 dark:bg-blue-400/20 animate-float"
+        style={{
+          top: `${Math.random() * 100}%`,
+          left: `${Math.random() * 100}%`,
+          width: `${Math.random() * 4 + 2}px`,
+          height: `${Math.random() * 4 + 2}px`,
+          animationDelay: `${Math.random() * 10}s`,
+          animationDuration: `${Math.random() * 15 + 10}s`,
+        }}
+      />
+    ))
+  }
+
+  <div class="relative w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    {/* Two Column Layout */}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
+      {/* Left: Terminal Card */}
+      <div
+        data-aos="fade-up"
+        data-aos-delay="100"
+      >
+        <div class="bg-[#1a1b26]/90 backdrop-blur-sm rounded-3xl overflow-hidden shadow-2xl shadow-black/50 border border-slate-700/30">
+          {/* Header Bar */}
+          <div class="px-6 py-4 bg-[#1f2335]/80 border-b border-slate-700/30 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full bg-[#ff5f57] ring-1 ring-[#e0443e]/50"></div>
+              <div class="w-3 h-3 rounded-full bg-[#febc2e] ring-1 ring-[#dea123]/50"></div>
+              <div class="w-3 h-3 rounded-full bg-[#28c840] ring-1 ring-[#1aab29]/50"></div>
+            </div>
+            <span class="text-xs text-slate-500 font-mono">zsh</span>
+            <div class="w-14"></div>
+          </div>
+
+          {/* Terminal Content */}
+          <div class="p-6 md:p-8 font-mono text-sm md:text-[15px] leading-relaxed min-h-[400px] md:min-h-[440px]">
+            <div id="terminal-output" class="space-y-1"></div>
+            <div id="terminal-prompt" class="hidden mt-2">
+              <span class="text-[#73daca]">➜</span>
+              <span class="text-[#7aa2f7] ml-2">~</span>
+              <span class="ml-2 text-[#a9b1d6]" id="typing-text"></span>
+              <span class="inline-block w-2 h-4 md:h-5 bg-[#73daca] ml-1 animate-pulse align-middle" id="cursor"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right: Profile Card - Screenshot Style */}
+      <div
+        data-aos="fade-up"
+        data-aos-delay="200"
+      >
+        <div class="bg-[#1e2235]/90 backdrop-blur-sm rounded-3xl p-8 md:p-10 text-center shadow-2xl border border-slate-700/30">
+          {/* Avatar */}
+          <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 mb-5 shadow-lg shadow-purple-500/25">
+            <span class="text-3xl font-bold text-white">{profile.name.slice(0, 1)}</span>
+          </div>
+
+          {/* Name */}
+          <h2 class="text-xl font-bold text-white mb-1.5">
+            {profile.name}
+          </h2>
+
+          {/* Role */}
+          <p class="text-sm text-slate-400 mb-8">
+            {profile.role}
+          </p>
+
+          {/* Stats Row */}
+          <div class="flex items-center justify-center gap-8 md:gap-10">
+            <div class="text-center">
+              <p class="text-2xl md:text-3xl font-bold text-violet-400">{profile.careerYears}<span class="text-lg md:text-xl">년+</span></p>
+              <p class="text-xs text-slate-500 mt-1">경력</p>
+            </div>
+            <div class="text-center">
+              <p class="text-2xl md:text-3xl font-bold text-violet-400">{profile.projectCount}<span class="text-lg md:text-xl">개+</span></p>
+              <p class="text-xs text-slate-500 mt-1">프로젝트</p>
+            </div>
+            <div class="text-center">
+              <p class="text-2xl md:text-3xl font-bold text-violet-400">{profile.skillCount}<span class="text-lg md:text-xl">개+</span></p>
+              <p class="text-xs text-slate-500 mt-1">기술 스택</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Scroll indicator */}
+    <div class="hidden lg:flex justify-center mt-16">
+      <div class="flex flex-col items-center gap-2 text-slate-500 animate-bounce">
+        <span class="text-xs">Scroll</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  @keyframes shooting-star {
+    0% {
+      transform: translateX(0) translateY(0) rotate(-45deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(200px) translateY(200px) rotate(-45deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    25% { transform: translateY(-20px) translateX(10px); }
+    50% { transform: translateY(-10px) translateX(-10px); }
+    75% { transform: translateY(-30px) translateX(5px); }
+  }
+
+  .animate-twinkle {
+    animation: twinkle infinite ease-in-out;
+  }
+
+  .shooting-star {
+    animation: shooting-star infinite linear;
+    opacity: 0;
+  }
+
+  .animate-float {
+    animation: float infinite ease-in-out;
+  }
+</style>
+
+<script define:vars={{ terminalLines }}>
+  (function () {
+    const outputEl = document.getElementById('terminal-output');
+    const promptEl = document.getElementById('terminal-prompt');
+    const typingTextEl = document.getElementById('typing-text');
+    const cursorEl = document.getElementById('cursor');
+
+    if (!outputEl || !promptEl || !typingTextEl || !cursorEl) return;
+
+    const TYPE_SPEED = 50;
+    const LINE_DELAY = 250;
+    const OUTPUT_DELAY = 350;
+
+    function sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async function typeText(element, text, speed = TYPE_SPEED) {
+      for (let i = 0; i < text.length; i++) {
+        element.textContent += text[i];
+        await sleep(speed);
+      }
+    }
+
+    function createPromptLine() {
+      const line = document.createElement('div');
+      line.className = 'flex flex-wrap items-start gap-x-2';
+      line.innerHTML = `
+        <span class="text-[#73daca] shrink-0">➜</span>
+        <span class="text-[#7aa2f7] shrink-0">~</span>
+        <span class="typing-command text-[#c0caf5]"></span>
+      `;
+      return line;
+    }
+
+    function createOutputLine(text) {
+      const line = document.createElement('div');
+      line.className = 'text-[#a9b1d6] pl-0 md:pl-6 mb-3 leading-relaxed';
+      line.textContent = text;
+      return line;
+    }
+
+    async function runTerminal() {
+      await sleep(500);
+
+      for (const line of terminalLines) {
+        promptEl.classList.remove('hidden');
+        typingTextEl.textContent = '';
+        await sleep(200);
+
+        await typeText(typingTextEl, line.cmd);
+        await sleep(LINE_DELAY);
+
+        const promptLine = createPromptLine();
+        const cmdSpan = promptLine.querySelector('.typing-command');
+        cmdSpan.textContent = line.cmd;
+        outputEl.appendChild(promptLine);
+
+        await sleep(OUTPUT_DELAY);
+
+        const outputLine = createOutputLine(line.output);
+        outputEl.appendChild(outputLine);
+
+        promptEl.classList.add('hidden');
+        await sleep(400);
+      }
+
+      promptEl.classList.remove('hidden');
+      typingTextEl.textContent = '';
+    }
+
+    runTerminal();
+  })();
+</script>

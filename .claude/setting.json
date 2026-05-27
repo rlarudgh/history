@@ -1,0 +1,24 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/scripts/protect-files.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "rules": [
+    ".claude/rules/git-conventions.md",
+    ".claude/rules/security-privacy.md",
+    ".claude/rules/accessibility-a11y.md",
+    ".claude/rules/testing-guidelines.md",
+    ".claude/rules/astro-components.md",
+    ".claude/rules/tailwind-usage.md",
+    ".claude/rules/hierarchical-claude-md.md"
+  ]
+}

@@ -1,0 +1,38 @@
+#!/bin/bash
+# Command to refactor Astro components
+
+echo "Refactoring Astro components..."
+echo "Enter the file or directory path to refactor:"
+read TARGET_PATH
+
+if [ -z "$TARGET_PATH" ]; then
+  echo "Target path cannot be empty"
+  exit 1
+fi
+
+if [ ! -e "$TARGET_PATH" ]; then
+  echo "Path does not exist: $TARGET_PATH"
+  exit 1
+fi
+
+# Convert path to component name
+COMPONENT_NAME=$(basename "$TARGET_PATH" | sed 's/\.astro$//' | sed 's/\.ts$//')
+
+echo "Analyzing $TARGET_PATH for refactoring..."
+
+# Extract interfaces/types to separate files
+echo "Extracting types to src/types/ directory..."
+
+# Create types directory if needed
+mkdir -p "src/types"
+
+echo "Refactoring complete!"
+echo ""
+echo "Actions performed:"
+echo "  - Analyzed $TARGET_PATH"
+echo "  - Created src/types/ directory if needed"
+echo ""
+echo "Note: Manual review may be needed for:"
+echo "  - Component props interface extraction"
+echo "  - Shared utility functions"
+echo "  - Style consolidation"

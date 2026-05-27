@@ -1,0 +1,77 @@
+#!/bin/bash
+# Command to create a new Astro component or page
+
+echo "Creating new Astro component/page..."
+echo "Enter component/page name (e.g., about-section, project-card):"
+read COMPONENT_NAME
+
+if [ -z "$COMPONENT_NAME" ]; then
+  echo "Component name cannot be empty"
+  exit 1
+fi
+
+# Convert to kebab-case
+COMPONENT_NAME=$(echo "$COMPONENT_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+
+# Determine type
+echo "What type?"
+echo "1. UI Component (src/components/ui/)"
+echo "2. Section Component (src/components/sections/)"
+echo "3. Layout Component (src/components/layout/)"
+echo "4. Page (src/pages/)"
+read -p "Select (1-4): " TYPE
+
+case $TYPE in
+  1)
+    DIR="src/components/ui"
+    ;;
+  2)
+    DIR="src/components/sections"
+    ;;
+  3)
+    DIR="src/components/layout"
+    ;;
+  4)
+    DIR="src/pages"
+    ;;
+  *)
+    echo "Invalid selection"
+    exit 1
+    ;;
+esac
+
+FILE_PATH="$DIR/$COMPONENT_NAME.astro"
+
+if [ -f "$FILE_PATH" ]; then
+  echo "File $FILE_PATH already exists"
+  exit 1
+fi
+
+# Create directory if needed
+mkdir -p "$DIR"
+
+# Convert kebab-case to PascalCase for component name
+PASCAL_NAME=$(echo "$COMPONENT_NAME" | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}' | sed 's/-\([a-z]\)/\U\1/g')
+
+# Create Astro component file
+cat > "$FILE_PATH" << EOF
+---
+interface Props {
+  // TODO: Define props
+}
+
+const { /* props */ } = Astro.props;
+---
+
+<div class="">
+  <!-- TODO: Implement component -->
+</div>
+EOF
+
+echo "$PASCAL_NAME created successfully at $FILE_PATH"
+echo ""
+echo "Next steps:"
+echo "1. Define Props interface"
+echo "2. Implement component markup"
+echo "3. Add Tailwind CSS classes"
+echo "4. Import and use in pages or other components"

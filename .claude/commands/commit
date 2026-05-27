@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+
+# Commit Command
+# Automatically generates conventional commit messages and commits changes
+
+set -e  # Exit on any error
+
+# Get staged changes
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMRTUXB 2>/dev/null || echo "")
+
+if [ -z "$STAGED_FILES" ]; then
+  echo "No staged changes to commit."
+  echo "Please stage changes first with: git add <files>"
+  exit 1
+fi
+
+# Analyze changes to determine commit type
+COMMIT_TYPE="feat"  # Default
+SCOPE=""
+
+# Check for fix patterns
+if echo "$STAGED_FILES" | grep -q -E "(fix|bug|patch|hotfix)" || \
+   git diff --cached --name-only | grep -q -i -E "fix|bug"; then
+  COMMIT_TYPE="fix"
+fi
+
+# Check for documentation patterns
+if echo "$STAGED_FILES" | grep -q -E "\.(md|txt)$|documentation|readme|changelog" || \
+   git diff --cached | grep -q -i -E "doc|readme|changelog"; then
+  COMMIT_TYPE="docs"
+fi
+
+# Check for refactor patterns
+if echo "$STAGED_FILES" | grep -q -E "refactor|restructure" || \
+   git diff --cached | grep -q -i -E "refactor|restructure"; then
+  COMMIT_TYPE="refactor"
+fi
+
+# Check for test patterns
+if echo "$STAGED_FILES" | grep -q -E "\.(test|spec)\.(ts|tsx|js)$|__tests__" || \
+   git diff --cached | grep -q -i -E "test|spec"; then
+  COMMIT_TYPE="test"
+fi
+
+# Check for chore patterns
+if echo "$STAGED_FILES" | grep -q -E "(config|ci|build|scripts|deps|dependencies|package\.json|yarn\.lock|bun\.lock)" || \
+   git diff --cached | grep -q -i -E "config|ci|build|chore|deps|dependencies"; then
+  COMMIT_TYPE="chore"
+fi
+
+# Check for style patterns
+if echo "$STAGED_FILES" | grep -q -E "\.(css|scss|sass|less|styl)$" || \
+   git diff --cached | grep -q -i -E "style|format|lint|prettier"; then
+  COMMIT_TYPE="style"
+fi
+
+# Try to extract scope from file paths
+if echo "$STAGED_FILES" | grep -q "src/components/ui/"; then
+  SCOPE="ui"
+elif echo "$STAGED_FILES" | grep -q "src/components/sections/"; then
+  SCOPE="sections"
+elif echo "$STAGED_FILES" | grep -q "src/components/layout/"; then
+  SCOPE="layout"
+elif echo "$STAGED_FILES" | grep -q "src/pages/projects/"; then
+  SCOPE="projects"
+elif echo "$STAGED_FILES" | grep -q "src/pages/"; then
+  SCOPE="pages"
+elif echo "$STAGED_FILES" | grep -q "src/content/"; then
+  SCOPE="content"
+elif echo "$STAGED_FILES" | grep -q "src/data/"; then
+  SCOPE="data"
+elif echo "$STAGED_FILES" | grep -q "src/layouts/"; then
+  SCOPE="layouts"
+elif echo "$STAGED_FILES" | grep -q "e2e/"; then
+  SCOPE="test"
+elif echo "$STAGED_FILES" | grep -q "\.github/"; then
+  SCOPE="ci"
+fi
+
+# Generate commit message
+if [ -n "$SCOPE" ]; then
+  COMMIT_MSG="${COMMIT_TYPE}(${SCOPE}): "
+else
+  COMMIT_MSG="${COMMIT_TYPE}: "
+fi
+
+# Add description based on changes
+FILE_COUNT=$(echo "$STAGED_FILES" | wc -l)
+if [ "$FILE_COUNT" -eq 1 ]; then
+  FILE_NAME=$(basename "$STAGED_FILES" | cut -d'.' -f1)
+  COMMIT_MSG="${COMMIT_MSG}update ${FILE_NAME}"
+else
+  COMMIT_MSG="${COMMIT_MSG}update ${FILE_COUNT} files"
+fi
+
+# Show what will be committed
+echo "Staged files:"
+echo "$STAGED_FILES" | sed 's/^/  /'
+echo ""
+echo "Proposed commit message:"
+echo "  $COMMIT_MSG"
+echo ""
+
+# Ask for confirmation
+read -p "Commit with this message? [y/N] " -n 1 -r
+echo ""
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+  echo "Commit cancelled."
+  exit 1
+fi
+
+# Perform the commit
+git commit -m "$COMMIT_MSG"
+
+echo "✅ Changes committed successfully!"
+echo ""
+echo "To push changes, run: git push"
+echo "To create a pull request, use: gh pr create"

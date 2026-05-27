@@ -1,0 +1,45 @@
+---
+title: "Cym702: For Human"
+company: "Yellosis"
+role: "Frontend / Hybrid App Developer"
+techStack: ["Vue2", "JavaScript", "VueX", "SCSS", "ApexChart", "Kotlin", "OpenCV", "Swift", "Python"]
+shortDesc: "레거시 프로젝트 마이그레이션으로 UX와 유지보수 효율성을 극대화한 웹사이트 리뉴얼"
+features:
+  - "삼성헬스 연동 (Kotlin + Samsung Health SDK)"
+  - "DoS 공격 방지 (디바이스 고유값 기반)"
+  - "Native ↔ WebView 프로토콜 통신"
+  - "회사 핵심 기능 AAR 라이브러리화"
+  - "UTC TimeOffset 기반 국가별 데이터 조회"
+hashtags: ["앱개발", "헬스케어", "Vue", "Kotlin", "보안"]
+category: "앱"
+learnings:
+  - "DoS 공격 방지를 위한 디바이스 식별 체계 구축"
+  - "삼성헬스 SDK 연동 및 데이터 가공"
+  - "Native 기능을 AAR 파일로 추출하여 파트너사 전달"
+  - "레거시 환경 개선을 통한 팀 생산성 향상"
+coverImage: "/images/project-cym702-human.webp"
+startDate: "2025-06"
+endDate: "2025-06"
+isOngoing: false
+order: 3
+links:
+  - label: "앱 다운로드"
+    url: "https://yellosis.com/cym702_app_down.html"
+---
+
+## 상세 내용
+
+레거시 프로젝트를 마이그레이션하여 사용자 경험(UX)과 유지보수 효율성을 극대화한 회사 웹사이트 리뉴얼 프로젝트입니다.
+
+### 구현 내용
+
+- **삼성헬스 연동**: Kotlin + Samsung Health SDK For Android를 통해 삼성헬스 데이터 연동
+- **웹뷰 유지보수 및 고도화**: 삼성헬스 (걸음 + 혈압) 데이터 연동 및 결과 그래프 제작
+- **DoS 공격 방지**: 디바이스 고유값을 이용해 재발 방지
+
+### 성과
+
+1. 문자 서비스 Dos 공격 대비 - 디바이스 식별값(`device-id`, `app-finger-print`, `client-ip`) 활용
+2. 삼성헬스 기능 연동 - Native ↔ WebView 프로토콜 통신으로 서버 호출 없이 데이터 가공
+3. 회사 핵심 Native 기능을 AAR 파일로 추출하여 파트너사에 전달
+4. 코드 주석과 문서(jsDocs 등)로 히스토리 기록하여 팀 전체 생산성 향상

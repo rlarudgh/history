@@ -1,0 +1,33 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-zinc-950 text-zinc-400 py-8 dark:border-t dark:border-zinc-800">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div
+      class="flex flex-col md:flex-row items-center justify-between gap-4"
+    >
+      <p class="text-sm">
+        &copy; {currentYear} Portfolio. All rights reserved.
+      </p>
+      <div class="flex items-center gap-6">
+        <a
+          href="https://github.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-sm hover:text-zinc-100 transition-colors"
+        >
+          GitHub
+        </a>
+        <a
+          href="https://linkedin.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-sm hover:text-zinc-100 transition-colors"
+        >
+          LinkedIn
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

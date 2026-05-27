@@ -1,0 +1,67 @@
+#!/bin/bash
+# Command to generate Playwright E2E test files
+
+echo "Generating Playwright E2E test files..."
+echo "Enter page path (e.g., /about, /projects, /contact):"
+read PAGE_PATH
+
+if [ -z "$PAGE_PATH" ]; then
+  echo "Page path cannot be empty"
+  exit 1
+fi
+
+# Normalize path
+PAGE_PATH=$(echo "$PAGE_PATH" | sed 's/^\///')
+
+# Determine test file name
+if [ -z "$PAGE_PATH" ]; then
+  TEST_FILE="e2e/landing.spec.ts"
+  PAGE_NAME="랜딩"
+else
+  TEST_FILE="e2e/${PAGE_PATH//\//-}.spec.ts"
+  PAGE_NAME=$(basename "$PAGE_PATH")
+fi
+
+# Check if test file already exists
+if [ -f "$TEST_FILE" ]; then
+  echo "Test file already exists at $TEST_FILE"
+  echo "Overwrite? (y/N)"
+  read OVERWRITE
+  if [[ ! "$OVERWRITE" =~ ^[Yy]$ ]]; then
+    echo "Operation cancelled"
+    exit 0
+  fi
+fi
+
+# Create test file
+cat > "$TEST_FILE" << EOF
+import { test, expect } from '@playwright/test';
+
+test.describe('${PAGE_NAME} 페이지', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/${PAGE_PATH}');
+  });
+
+  test('페이지가 정상적으로 로드되어야 함', async ({ page }) => {
+    await expect(page).toHaveTitle(/.*/);
+  });
+
+  test('주요 콘텐츠가 보여야 함', async ({ page }) => {
+    // TODO: 페이지별 주요 콘텐츠 추가
+    await expect(page.getByRole('heading')).toBeVisible();
+  });
+
+  // Add more specific tests here
+  // Example:
+  // test('네비게이션 링크가 동작해야 함', async ({ page }) => {
+  //   await page.getByRole('link', { name: '소개' }).click();
+  //   await expect(page).toHaveURL('/about');
+  // });
+});
+EOF
+
+echo "Test file created at $TEST_FILE"
+echo "Remember to:"
+echo "1. Add specific test cases for the page's functionality"
+echo "2. Run tests with: bun run test:e2e"
+echo "3. Update page title assertion in the first test"

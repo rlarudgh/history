@@ -1,0 +1,96 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+import Footer from '../components/layout/Footer.astro';
+import Header from '../components/layout/Header.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+const {
+  title = '포트폴리오',
+  description = '개발자 포트폴리오입니다.',
+  image = '/favicon.svg',
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://example.com');
+---
+
+<!doctype html>
+<html lang="ko" transition:name="root" transition:animate="none">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <link rel="canonical" href={canonicalURL} />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta
+      property="og:image"
+      content={new URL(image, Astro.site || 'https://example.com')}
+    />
+    <meta property="og:type" content="website" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta
+      name="twitter:image"
+      content={new URL(image, Astro.site || 'https://example.com')}
+    />
+    <script is:inline>
+      (function () {
+        const theme = (() => {
+          if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+            return localStorage.getItem('theme');
+          }
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return 'dark';
+          }
+          return 'light';
+        })();
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+    <ClientRouter />
+  </head>
+  <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50 transition-colors duration-300">
+    <Header />
+    <main class="flex-1" transition:animate="fade">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      import AOS from 'aos';
+      import 'aos/dist/aos.css';
+      
+      function initAOS() {
+        AOS.init({
+          duration: 800,
+          once: true,
+          offset: 50,
+        });
+      }
+      
+      // Initial load
+      initAOS();
+      
+      // Re-init after view transition
+      document.addEventListener('astro:page-load', () => {
+        initAOS();
+      });
+    </script>
+  </body>
+</html>

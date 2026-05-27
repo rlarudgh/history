@@ -1,0 +1,111 @@
+---
+import TechBadge from '../components/ui/TechBadge.astro';
+import { certifications } from '../data/certifications';
+import { experiences } from '../data/experiences';
+import { profile } from '../data/profile';
+import { skills } from '../data/skills';
+import Layout from '../layouts/Layout.astro';
+
+const workExps = experiences.filter((e) => e.type === 'work');
+const eduExps = experiences.filter((e) => e.type === 'education');
+---
+
+<Layout
+  title="소개 | 포트폴리오"
+  description="개발자 자기소개 페이지입니다."
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <h1 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-50 mb-8" data-aos="fade-up">
+      김경호
+    </h1>
+
+    <div class="prose prose-slate dark:prose-invert max-w-none mb-16" data-aos="fade-up">
+      {profile.introductions.map((text) => (
+        <p class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-4">{text}</p>
+      ))}
+    </div>
+
+    <section class="mb-16" data-aos="fade-up">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-6">기술 스택</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {skills.map((group) => (
+          <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-100 dark:border-slate-700 transition-colors duration-300">
+            <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">
+              {group.category}
+            </h3>
+            <div class="flex flex-wrap gap-2">
+              {group.items.map((tech) => (
+                <TechBadge name={tech} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-16" data-aos="fade-up">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-6">경력</h2>
+      <div class="space-y-8">
+        {
+          workExps.map((exp) => (
+            <div class="relative pl-8 border-l-2 border-slate-200 dark:border-slate-700">
+              <div class="absolute -left-[9px] top-0 w-4 h-4 bg-blue-600 rounded-full border-4 border-white dark:border-slate-900" />
+              <div class="mb-1">
+                <span class="text-sm text-slate-500 dark:text-slate-400">{exp.period}</span>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">{exp.title}</h3>
+              <p class="text-slate-600 dark:text-slate-400 mb-2">{exp.organization}</p>
+              <p class="text-slate-600 dark:text-slate-400 text-sm mb-3">{exp.description}</p>
+              <div class="flex flex-wrap gap-2">
+                {exp.tags?.map((tag) => (
+                  <span class="px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded text-xs font-medium">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="mb-16" data-aos="fade-up">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-6">학력</h2>
+      <div class="space-y-8">
+        {
+          eduExps.map((exp) => (
+            <div class="relative pl-8 border-l-2 border-slate-200 dark:border-slate-700">
+              <div class="absolute -left-[9px] top-0 w-4 h-4 bg-slate-400 rounded-full border-4 border-white dark:border-slate-900" />
+              <div class="mb-1">
+                <span class="text-sm text-slate-500 dark:text-slate-400">{exp.period}</span>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">{exp.title}</h3>
+              <p class="text-slate-600 dark:text-slate-400 mb-2">{exp.organization}</p>
+              <p class="text-slate-600 dark:text-slate-400 text-sm">{exp.description}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    {certifications.length > 0 && (
+      <section class="mb-16" data-aos="fade-up">
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-6">자격증</h2>
+        <div class="space-y-4">
+          {certifications.map((cert) => (
+            <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 transition-colors duration-300">
+              <div class="flex items-center justify-between mb-1">
+                <h3 class="text-base font-bold text-slate-900 dark:text-slate-100">{cert.name}</h3>
+                <span class="text-sm text-slate-500 dark:text-slate-400">{cert.date}</span>
+              </div>
+              <p class="text-sm text-slate-600 dark:text-slate-400">{cert.issuer}</p>
+              {cert.description && (
+                <p class="text-sm text-slate-500 dark:text-slate-500 mt-1">{cert.description}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+</Layout>
