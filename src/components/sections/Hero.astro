@@ -276,8 +276,10 @@ const shootingStars = Array.from({ length: 6 }, (_, i) => ({
     }
 
     async function typeText(element, text, speed = TYPE_SPEED) {
+      let current = '';
       for (let i = 0; i < text.length; i++) {
-        element.textContent += text[i];
+        current += text[i];
+        element.textContent = current;
         await sleep(speed);
       }
     }
@@ -300,7 +302,17 @@ const shootingStars = Array.from({ length: 6 }, (_, i) => ({
       return line;
     }
 
+    let isRunning = false;
+
     async function runTerminal() {
+      if (isRunning) return;
+      isRunning = true;
+
+      // Reset output for view transitions
+      outputEl.innerHTML = '';
+      promptEl.classList.add('hidden');
+      typingTextEl.textContent = '';
+
       await sleep(500);
 
       for (const line of terminalLines) {
@@ -311,24 +323,26 @@ const shootingStars = Array.from({ length: 6 }, (_, i) => ({
         await typeText(typingTextEl, line.cmd);
         await sleep(LINE_DELAY);
 
+        // Move typed command to output and hide input line (like pressing Enter)
         const promptLine = createPromptLine();
         const cmdSpan = promptLine.querySelector('.typing-command');
         cmdSpan.textContent = line.cmd;
         outputEl.appendChild(promptLine);
+        promptEl.classList.add('hidden');
 
         await sleep(OUTPUT_DELAY);
 
         const outputLine = createOutputLine(line.output);
         outputEl.appendChild(outputLine);
-
-        promptEl.classList.add('hidden');
         await sleep(400);
       }
 
       promptEl.classList.remove('hidden');
       typingTextEl.textContent = '';
+      isRunning = false;
     }
 
-    runTerminal();
+    // Run after every page load (including initial load & view transitions)
+    document.addEventListener('astro:page-load', runTerminal);
   })();
 </script>

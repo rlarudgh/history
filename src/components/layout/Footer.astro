@@ -1,4 +1,6 @@
 ---
+import { socials } from '../../data/socials';
+
 const currentYear = new Date().getFullYear();
 ---
 
@@ -12,7 +14,7 @@ const currentYear = new Date().getFullYear();
       </p>
       <div class="flex items-center gap-6">
         <a
-          href="https://github.com"
+          href={socials.github.url}
           target="_blank"
           rel="noopener noreferrer"
           class="text-sm hover:text-zinc-100 transition-colors"
@@ -20,7 +22,7 @@ const currentYear = new Date().getFullYear();
           GitHub
         </a>
         <a
-          href="https://linkedin.com"
+          href={socials.linkedin.url}
           target="_blank"
           rel="noopener noreferrer"
           class="text-sm hover:text-zinc-100 transition-colors"

@@ -46,7 +46,7 @@ const allCategories = [...new Set(sortedProjects.map((p) => p.data.category))];
       {
         sortedProjects.map((project, index) => (
           <div
-            class="project-item"
+            class="project-item h-full"
             data-category={project.data.category}
             data-aos="fade-up"
             data-aos-delay={index * 100}

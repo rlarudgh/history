@@ -43,18 +43,23 @@ const style = categoryStyles[category] || {
 ---
 
 <article
-  class="group bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg dark:hover:shadow-slate-900/50 transition-all duration-300"
+  class="group bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg dark:hover:shadow-slate-900/50 transition-all duration-300 h-full flex flex-col"
 >
-  <a href={`/projects/${slug}`} class="block">
-    <div class="aspect-video overflow-hidden" transition:name={`project-image-${slug}`}>
+  <a href={`/projects/${slug}`} class="flex flex-col h-full">
+    <div class="aspect-video overflow-hidden flex-shrink-0 relative" transition:name={`project-image-${slug}`}>
       {
         coverImage ? (
-          <img
-            src={coverImage}
-            alt={title}
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            loading="lazy"
-          />
+          <>
+            {/* Skeleton placeholder */}
+            <div class="absolute inset-0 animate-pulse bg-slate-200 dark:bg-slate-700" data-skeleton />
+            <img
+              src={coverImage}
+              alt={title}
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-0 transition-opacity duration-500"
+              loading="lazy"
+              onload="this.classList.remove('opacity-0'); this.previousElementSibling?.classList.add('hidden');"
+            />
+          </>
         ) : (
           <div class={`w-full h-full bg-gradient-to-br ${style.gradient} flex flex-col items-center justify-center relative overflow-hidden`}>
             {/* Decorative circles */}
@@ -70,7 +75,7 @@ const style = categoryStyles[category] || {
         )
       }
     </div>
-    <div class="p-5">
+    <div class="p-5 flex-1 flex flex-col">
       <div class="flex items-center gap-2 mb-2">
         <span class="text-xs text-slate-500 dark:text-slate-400">{company}</span>
         <span class="text-xs text-slate-300 dark:text-slate-600">|</span>
@@ -89,13 +94,11 @@ const style = categoryStyles[category] || {
           {category}
         </span>
       </div>
+      <div class="flex-1"></div>
       <div class="flex flex-wrap gap-1.5">
         {techStack.slice(0, 4).map((tech) => (
           <Tag label={tech} variant="outline" />
         ))}
-        {techStack.length > 4 && (
-          <Tag label={`+${techStack.length - 4}`} variant="outline" />
-        )}
       </div>
     </div>
   </a>

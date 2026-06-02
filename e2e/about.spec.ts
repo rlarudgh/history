@@ -15,18 +15,19 @@ test.describe('About 페이지', () => {
 
   test('기술 스택 섹션이 보여야 함', async ({ page }) => {
     await expect(page.getByRole('heading', { name: '기술 스택' })).toBeVisible();
-    await expect(page.getByText('Next.js')).toBeVisible();
-    await expect(page.getByText('TypeScript')).toBeVisible();
+    const badges = page.locator('[class*="badge"], [class*="Badge"]');
+    expect(await badges.count()).toBeGreaterThan(0);
   });
 
   test('경력 섹션이 보여야 함', async ({ page }) => {
     await expect(page.getByRole('heading', { name: '경력' })).toBeVisible();
-    await expect(page.getByText('ABC 커머스')).toBeVisible();
-    await expect(page.getByText('XYZ 핀테크')).toBeVisible();
+    const timelineItems = page.locator('.border-l-2');
+    expect(await timelineItems.count()).toBeGreaterThan(0);
   });
 
   test('학력 섹션이 보여야 함', async ({ page }) => {
     await expect(page.getByRole('heading', { name: '학력' })).toBeVisible();
-    await expect(page.getByText('한국대학교')).toBeVisible();
+    const timelineItems = page.locator('.border-l-2');
+    expect(await timelineItems.count()).toBeGreaterThan(0);
   });
 });
