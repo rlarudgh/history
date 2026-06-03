@@ -1,7 +1,6 @@
 // @ts-check
 
 import mdx from '@astrojs/mdx';
-
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 
@@ -11,13 +10,12 @@ export default defineConfig({
   output: 'static',
 
   vite: {
-    plugins: [
-      tailwindcss({
-        theme: {
-          extend: {},
-        },
-      }),
-    ],
+    plugins: [tailwindcss()],
+    resolve: {
+      tsconfig: {
+        configFile: true,
+      },
+    },
   },
 
   integrations: [mdx()],
