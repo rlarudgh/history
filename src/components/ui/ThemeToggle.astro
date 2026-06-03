@@ -9,7 +9,7 @@
   <input type="checkbox" class="sr-only peer" id="theme-checkbox" />
   
   {/* Track background with icons */}
-  <span class="absolute inset-0 flex items-center justify-between px-1.5">
+  <span class="absolute inset-0 flex items-center justify-between px-1.5 pointer-events-none">
     {/* Sun icon - left side */}
     <svg
       class="w-4 h-4 text-amber-500 opacity-100 dark:opacity-0 transition-opacity duration-300"
@@ -70,29 +70,41 @@
 </label>
 
 <script>
+  import { getCurrentTheme, applyTheme } from '../../scripts/theme';
+
   (function () {
-    const checkbox = document.getElementById('theme-checkbox') as HTMLInputElement | null;
+    function getCheckbox(): HTMLInputElement | null {
+      return document.getElementById('theme-checkbox') as HTMLInputElement | null;
+    }
 
     function updateToggle() {
-      const isDark = document.documentElement.classList.contains('dark');
+      const checkbox = getCheckbox();
       if (checkbox) {
-        checkbox.checked = isDark;
+        checkbox.checked = getCurrentTheme() === 'dark';
       }
     }
 
     function toggleTheme() {
-      const isDark = document.documentElement.classList.contains('dark');
-      if (isDark) {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-      } else {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-      }
+      const currentTheme = getCurrentTheme();
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      applyTheme(newTheme);
+      localStorage.setItem('theme', newTheme);
       updateToggle();
     }
 
+    // Initial setup
+    const checkbox = getCheckbox();
     checkbox?.addEventListener('change', toggleTheme);
     updateToggle();
+
+    // Listen for theme application from Layout
+    document.addEventListener('theme-applied', () => {
+      const newCheckbox = getCheckbox();
+      if (newCheckbox && !newCheckbox.dataset.listenerAttached) {
+        newCheckbox.addEventListener('change', toggleTheme);
+        newCheckbox.dataset.listenerAttached = 'true';
+      }
+      updateToggle();
+    });
   })();
 </script>

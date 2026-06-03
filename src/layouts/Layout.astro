@@ -49,7 +49,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://example.
     />
     <script is:inline>
       (function () {
-        const theme = (() => {
+        const getInitialTheme = function () {
           if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
             return localStorage.getItem('theme');
           }
@@ -57,7 +57,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://example.
             return 'dark';
           }
           return 'light';
-        })();
+        };
+        const theme = getInitialTheme();
         if (theme === 'dark') {
           document.documentElement.classList.add('dark');
         }
@@ -75,7 +76,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://example.
     <script>
       import AOS from 'aos';
       import 'aos/dist/aos.css';
-      
+      import { getInitialTheme, applyTheme } from '../scripts/theme';
+
       function initAOS() {
         AOS.init({
           duration: 800,
@@ -83,13 +85,22 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://example.
           offset: 50,
         });
       }
-      
+
+      function initTheme() {
+        const theme = getInitialTheme();
+        applyTheme(theme);
+        // ThemeToggle이 테마 변경을 감지할 수 있도록 이벤트 발생
+        document.dispatchEvent(new CustomEvent('theme-applied', { detail: { theme } }));
+      }
+
       // Initial load
       initAOS();
-      
+      initTheme();
+
       // Re-init after view transition
       document.addEventListener('astro:page-load', () => {
         initAOS();
+        initTheme();
       });
     </script>
   </body>
