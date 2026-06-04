@@ -4,6 +4,7 @@ import ThemeToggle from '../ui/ThemeToggle.astro';
 const navLinks = [
   { href: '/about', label: 'About' },
   { href: '/projects', label: 'Project' },
+  { href: '/blog', label: 'Blog' },
   { href: '/contact', label: 'Contact' },
 ];
 
@@ -91,7 +92,31 @@ const currentPath = Astro.url.pathname;
   const btn = document.getElementById('mobile-menu-btn');
   const menu = document.getElementById('mobile-menu');
 
-  btn?.addEventListener('click', () => {
+  function toggleMenu() {
     menu?.classList.toggle('hidden');
+    const isOpen = !menu?.classList.contains('hidden');
+    btn?.setAttribute('aria-expanded', String(isOpen));
+  }
+
+  function closeMenu() {
+    menu?.classList.add('hidden');
+    btn?.setAttribute('aria-expanded', 'false');
+  }
+
+  btn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleMenu();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!menu?.classList.contains('hidden') && !menu?.contains(e.target as Node) && !btn?.contains(e.target as Node)) {
+      closeMenu();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !menu?.classList.contains('hidden')) {
+      closeMenu();
+    }
   });
 </script>

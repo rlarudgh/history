@@ -15,9 +15,28 @@ const eduExps = experiences.filter((e) => e.type === 'education');
   description="개발자 자기소개 페이지입니다."
 >
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <h1 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-50 mb-8" data-aos="fade-up">
-      김경호
-    </h1>
+    {/* Profile Header */}
+    <div class="flex flex-col sm:flex-row items-center gap-6 mb-12" data-aos="fade-up">
+      {
+        profile.avatarUrl ? (
+          <img
+            src={profile.avatarUrl}
+            alt={profile.name}
+            class="w-24 h-24 rounded-2xl object-cover shadow-lg ring-2 ring-slate-100 dark:ring-slate-700"
+          />
+        ) : (
+          <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+            <span class="text-3xl font-bold text-white">{profile.name.slice(0, 1)}</span>
+          </div>
+        )
+      }
+      <div class="text-center sm:text-left">
+        <h1 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-50 mb-2">
+          {profile.name}
+        </h1>
+        <p class="text-slate-600 dark:text-slate-400">{profile.role}</p>
+      </div>
+    </div>
 
     <div class="prose prose-slate dark:prose-invert max-w-none mb-16" data-aos="fade-up">
       {profile.introductions.map((text) => (

@@ -1,17 +1,27 @@
 ---
 import { getCollection, render } from 'astro:content';
+import ProjectCard from '../../components/ui/ProjectCard.astro';
 import Tag from '../../components/ui/Tag.astro';
 import Layout from '../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
-  return projects.map((project) => ({
-    params: { slug: project.id },
-    props: { project },
-  }));
+  const sorted = projects.sort((a, b) => a.data.order - b.data.order);
+
+  return sorted.map((project, index) => {
+    const prev = sorted[index - 1] ?? null;
+    const next = sorted[index + 1] ?? null;
+    const related = sorted
+      .filter((p) => p.id !== project.id && p.data.category === project.data.category)
+      .slice(0, 3);
+    return {
+      params: { slug: project.id },
+      props: { project, prev, next, related },
+    };
+  });
 }
 
-const { project } = Astro.props;
+const { project, prev, next, related } = Astro.props;
 const { Content } = await render(project);
 ---
 
@@ -109,6 +119,35 @@ const { Content } = await render(project);
       </div>
     </div>
 
+    {
+      project.data.screenshots && project.data.screenshots.length > 0 && (
+        <section class="mb-12" data-aos="fade-up">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-6">스크린샷</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="screenshot-gallery">
+            {project.data.screenshots.map((src, i) => (
+              <button
+                class="group relative aspect-video bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden cursor-zoom-in border-0"
+                data-screenshot-index={i}
+              >
+                <img
+                  src={src}
+                  alt={`${project.data.title} 스크린샷 ${i + 1}`}
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <svg class="w-8 h-8 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                  </svg>
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
     <div class="prose prose-slate dark:prose-invert max-w-none mb-12" data-aos="fade-up">
       <Content />
     </div>
@@ -143,7 +182,7 @@ const { Content } = await render(project);
 
     {
       project.data.links && project.data.links.length > 0 && (
-        <div class="flex flex-wrap gap-4" data-aos="fade-up">
+        <div class="flex flex-wrap gap-4 mb-12" data-aos="fade-up">
           {project.data.links.map((link) => (
             <a
               href={link.url}
@@ -170,5 +209,197 @@ const { Content } = await render(project);
         </div>
       )
     }
+
+    {/* Prev / Next Navigation */}
+    <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-slate-200 dark:border-slate-700">
+      {
+        prev ? (
+          <a
+            href={`/projects/${prev.id}`}
+            class="flex-1 group p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 transition-all"
+          >
+            <span class="text-xs text-slate-500 dark:text-slate-400 mb-1 block">이전 프로젝트</span>
+            <span class="text-lg font-semibold text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
+              {prev.data.title}
+            </span>
+          </a>
+        ) : (
+          <div class="flex-1" />
+        )
+      }
+      {
+        next ? (
+          <a
+            href={`/projects/${next.id}`}
+            class="flex-1 group p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 transition-all text-right"
+          >
+            <span class="text-xs text-slate-500 dark:text-slate-400 mb-1 block">다음 프로젝트</span>
+            <span class="text-lg font-semibold text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
+              {next.data.title}
+            </span>
+          </a>
+        ) : (
+          <div class="flex-1" />
+        )
+      }
+    </div>
+
+    {/* Related Projects */}
+    {
+      related.length > 0 && (
+        <section class="mt-16 pt-8 border-t border-slate-200 dark:border-slate-700" data-aos="fade-up">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-6">관련 프로젝트</h2>
+          <div class="grid md:grid-cols-3 gap-6">
+            {related.map((p) => (
+              <ProjectCard
+                title={p.data.title}
+                shortDesc={p.data.shortDesc}
+                company={p.data.company}
+                role={p.data.role}
+                category={p.data.category}
+                techStack={p.data.techStack}
+                hashtags={p.data.hashtags}
+                coverImage={p.data.coverImage}
+                slug={p.id}
+              />
+            ))}
+          </div>
+        </section>
+      )
+    }
   </div>
+
+  {/* Lightbox */}
+  <div
+    id="lightbox"
+    class="fixed inset-0 z-[80] bg-black/90 hidden items-center justify-center p-4"
+  >
+    <button
+      id="lightbox-close"
+      class="absolute top-4 right-4 p-2 text-white/80 hover:text-white z-10"
+      aria-label="닫기"
+    >
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        />
+      </svg>
+    </button>
+    <button
+      id="lightbox-prev"
+      class="absolute left-4 top-1/2 -translate-y-1/2 p-2 text-white/80 hover:text-white z-10 hidden"
+      aria-label="이전"
+    >
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 19l-7-7 7-7"
+        />
+      </svg>
+    </button>
+    <button
+      id="lightbox-next"
+      class="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-white/80 hover:text-white z-10 hidden"
+      aria-label="다음"
+    >
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 5l7 7-7 7"
+        />
+      </svg>
+    </button>
+    <img id="lightbox-img" src="" alt="" class="max-w-full max-h-full object-contain rounded-lg" />
+  </div>
+
+  <script is:inline>
+    (function () {
+      const gallery = document.getElementById('screenshot-gallery');
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImg = document.getElementById('lightbox-img');
+      const closeBtn = document.getElementById('lightbox-close');
+      const prevBtn = document.getElementById('lightbox-prev');
+      const nextBtn = document.getElementById('lightbox-next');
+
+      if (!gallery || !lightbox || !lightboxImg) return;
+
+      const buttons = gallery.querySelectorAll('button[data-screenshot-index]');
+      const images = Array.from(buttons).map((btn) => {
+        const img = btn.querySelector('img');
+        return img ? img.src : '';
+      });
+
+      let currentIndex = 0;
+
+      function open(index) {
+        if (images.length === 0) return;
+        currentIndex = index;
+        lightboxImg.src = images[currentIndex];
+        lightbox.classList.remove('hidden');
+        lightbox.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+        updateNav();
+      }
+
+      function close() {
+        lightbox.classList.add('hidden');
+        lightbox.classList.remove('flex');
+        document.body.style.overflow = '';
+      }
+
+      function updateNav() {
+        if (images.length > 1) {
+          prevBtn?.classList.remove('hidden');
+          nextBtn?.classList.remove('hidden');
+        } else {
+          prevBtn?.classList.add('hidden');
+          nextBtn?.classList.add('hidden');
+        }
+      }
+
+      function next() {
+        currentIndex = (currentIndex + 1) % images.length;
+        lightboxImg.src = images[currentIndex];
+      }
+
+      function prev() {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        lightboxImg.src = images[currentIndex];
+      }
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const index = Number(btn.getAttribute('data-screenshot-index'));
+          open(index);
+        });
+      });
+
+      closeBtn?.addEventListener('click', close);
+      lightbox?.addEventListener('click', (e) => {
+        if (e.target === lightbox) close();
+      });
+      prevBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        prev();
+      });
+      nextBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        next();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (lightbox.classList.contains('hidden')) return;
+        if (e.key === 'Escape') close();
+        if (e.key === 'ArrowRight') next();
+        if (e.key === 'ArrowLeft') prev();
+      });
+    })();
+  </script>
 </Layout>

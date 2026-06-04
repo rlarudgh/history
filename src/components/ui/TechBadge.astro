@@ -7,10 +7,23 @@ interface Props {
 
 const { name } = Astro.props;
 
+const customMap: Record<string, string | undefined> = {
+  vue2: 'vuedotjs',
+  'react-native': 'react',
+  golang: 'go',
+  'spring boot': 'spring',
+  springboot: 'spring',
+  'claude code': undefined,
+  codex: undefined,
+};
+
 // Convert tech name to simple-icons slug
 function toSlug(name: string): string {
-  return name
-    .toLowerCase()
+  const lower = name.toLowerCase();
+  if (customMap[lower] !== undefined) {
+    return customMap[lower] || '';
+  }
+  return lower
     .replace(/\.js$/, 'dotjs') // Next.js → nextdotjs
     .replace(/\.css$/, 'css') // Tailwind CSS → tailwindcss
     .replace(/[^a-z0-9]/g, ''); // Remove special chars
@@ -18,6 +31,7 @@ function toSlug(name: string): string {
 
 function getIcon(name: string) {
   const slug = toSlug(name);
+  if (!slug) return undefined;
   const iconKey = `si${slug.charAt(0).toUpperCase()}${slug.slice(1)}`;
   return (icons as Record<string, { path: string; hex: string } | undefined>)[iconKey];
 }

@@ -3,6 +3,8 @@ import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 import Footer from '../components/layout/Footer.astro';
 import Header from '../components/layout/Header.astro';
+import { profile } from '../data/profile';
+import { socials } from '../data/socials';
 
 interface Props {
   title?: string;
@@ -17,6 +19,18 @@ const {
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://example.com');
+const siteUrl = Astro.site?.toString() || 'https://example.com';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  jobTitle: profile.role,
+  description: profile.introductions[0],
+  url: siteUrl,
+  sameAs: [socials.github.url, socials.linkedin.url].filter(Boolean),
+  email: socials.email,
+};
 ---
 
 <!doctype html>
@@ -47,6 +61,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://example.
       name="twitter:image"
       content={new URL(image, Astro.site || 'https://example.com')}
     />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
     <script is:inline>
       (function () {
         const getInitialTheme = function () {
@@ -64,14 +81,40 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://example.
         }
       })();
     </script>
+
     <ClientRouter />
   </head>
   <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50 transition-colors duration-300">
+    {/* Scroll Progress Bar */}
+    <div
+      id="scroll-progress"
+      class="fixed top-0 left-0 h-1 bg-blue-600 z-[60] transition-all duration-150 ease-out"
+      style="width: 0%;"
+    />
+
     <Header />
     <main class="flex-1" transition:animate="fade">
       <slot />
     </main>
     <Footer />
+
+    {/* Scroll to Top Button */}
+    <button
+      id="scroll-to-top"
+      aria-label="맨 위로"
+      class="fixed bottom-6 right-6 z-50 p-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 opacity-0 translate-y-4 pointer-events-none transition-all duration-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+      </svg>
+    </button>
+
+    {/* Toast Container */}
+    <div
+      id="toast-container"
+      class="fixed top-20 right-4 z-[70] flex flex-col gap-2 pointer-events-none"
+      aria-live="polite"
+    />
 
     <script>
       import AOS from 'aos';
@@ -89,19 +132,75 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://example.
       function initTheme() {
         const theme = getInitialTheme();
         applyTheme(theme);
-        // ThemeToggle이 테마 변경을 감지할 수 있도록 이벤트 발생
         document.dispatchEvent(new CustomEvent('theme-applied', { detail: { theme } }));
       }
 
-      // Initial load
-      initAOS();
-      initTheme();
+      function initScrollProgress() {
+        const bar = document.getElementById('scroll-progress');
+        if (!bar) return;
+        const update = () => {
+          const scrollTop = window.scrollY;
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          bar.style.width = `${progress}%`;
+        };
+        window.addEventListener('scroll', update, { passive: true });
+        update();
+      }
 
-      // Re-init after view transition
-      document.addEventListener('astro:page-load', () => {
+      function initScrollToTop() {
+        const btn = document.getElementById('scroll-to-top');
+        if (!btn) return;
+        const toggle = () => {
+          if (window.scrollY > 400) {
+            btn.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+          } else {
+            btn.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+          }
+        };
+        window.addEventListener('scroll', toggle, { passive: true });
+        btn.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        toggle();
+      }
+
+      function initToast() {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        (window as any).showToast = function (message: string, type: 'success' | 'error' | 'info' = 'success') {
+          const toast = document.createElement('div');
+          const bgClass = type === 'success'
+            ? 'bg-green-600'
+            : type === 'error'
+              ? 'bg-red-600'
+              : 'bg-blue-600';
+          toast.className = `${bgClass} text-white px-4 py-3 rounded-lg shadow-lg text-sm font-medium pointer-events-auto transform transition-all duration-300 translate-x-full opacity-0`;
+          toast.textContent = message;
+          container.appendChild(toast);
+
+          requestAnimationFrame(() => {
+            toast.classList.remove('translate-x-full', 'opacity-0');
+          });
+
+          setTimeout(() => {
+            toast.classList.add('translate-x-full', 'opacity-0');
+            setTimeout(() => toast.remove(), 300);
+          }, 2500);
+        };
+      }
+
+      function initAll() {
         initAOS();
         initTheme();
-      });
+        initScrollProgress();
+        initScrollToTop();
+        initToast();
+      }
+
+      initAll();
+      document.addEventListener('astro:page-load', initAll);
     </script>
   </body>
 </html>

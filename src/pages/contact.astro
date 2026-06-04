@@ -18,9 +18,9 @@ import Layout from '../layouts/Layout.astro';
     </div>
 
     <div class="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-      <a
-        href={`mailto:${socials.email}`}
-        class="group flex items-center p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md transition-all"
+      <button
+        data-copy={socials.email}
+        class="group flex items-center p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md transition-all text-left w-full"
         data-aos="fade-up"
         data-aos-delay="0"
       >
@@ -45,11 +45,11 @@ import Layout from '../layouts/Layout.astro';
           <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">이메일</h3>
           <p class="text-slate-600 dark:text-slate-400">{socials.email}</p>
         </div>
-      </a>
+      </button>
 
-      <a
-        href={`tel:+82${socials.phone.replace(/-/g, '').replace(/^0/, '')}`}
-        class="group flex items-center p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md transition-all"
+      <button
+        data-copy={socials.phone}
+        class="group flex items-center p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md transition-all text-left w-full"
         data-aos="fade-up"
         data-aos-delay="100"
       >
@@ -74,7 +74,7 @@ import Layout from '../layouts/Layout.astro';
           <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">전화번호</h3>
           <p class="text-slate-600 dark:text-slate-400">{socials.phone}</p>
         </div>
-      </a>
+      </button>
 
       <a
         href={socials.github.url}
@@ -133,4 +133,25 @@ import Layout from '../layouts/Layout.astro';
       </a>
     </div>
   </div>
+
+  <script is:inline>
+    (function () {
+      document.querySelectorAll('[data-copy]').forEach((el) => {
+        el.addEventListener('click', async () => {
+          const text = el.getAttribute('data-copy');
+          if (!text) return;
+          try {
+            await navigator.clipboard.writeText(text);
+            if (typeof window.showToast === 'function') {
+              window.showToast('클립보드에 복사되었습니다', 'success');
+            }
+          } catch {
+            if (typeof window.showToast === 'function') {
+              window.showToast('복사에 실패했습니다', 'error');
+            }
+          }
+        });
+      });
+    })();
+  </script>
 </Layout>
