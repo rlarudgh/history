@@ -1,0 +1,125 @@
+---
+import { skills } from '../../data/skills';
+
+// 평균 스킬 레벨 계산
+const calculateAverageLevel = (category: (typeof skills)[0]) => {
+  if (category.items.length === 0) return 0;
+  const sum = category.items.reduce((acc, item) => acc + item.level, 0);
+  return Math.round(sum / category.items.length);
+};
+
+// 차트 데이터 준비
+const chartData = {
+  categories: skills.map((s) => s.category),
+  values: skills.map((s) => calculateAverageLevel(s)),
+};
+---
+
+<div class="w-full max-w-2xl mx-auto">
+  <div id="skill-radar-chart" class="w-full aspect-square max-h-[500px]"></div>
+</div>
+
+<script define:vars={{ chartData }}>
+  import * as echarts from 'echarts';
+
+  const chartDom = document.getElementById('skill-radar-chart');
+  if (!chartDom) return;
+
+  const myChart = echarts.init(chartDom, 'light', {
+    renderer: 'svg',
+  });
+
+  const option = {
+    radar: {
+      indicator: chartData.categories.map((name) => ({
+        name,
+        max: 100,
+      })),
+      shape: 'polygon',
+      splitNumber: 5,
+      axisName: {
+        color: '#1e293b',
+        fontWeight: 600,
+        fontSize: 14,
+      },
+      splitLine: {
+        lineStyle: {
+          color: '#e2e8f0',
+        },
+      },
+      splitArea: {
+        show: true,
+        areaStyle: {
+          color: ['rgba(59, 130, 246, 0.05)', 'rgba(59, 130, 246, 0.1)'].reverse(),
+        },
+      },
+      axisLine: {
+        lineStyle: {
+          color: '#cbd5e1',
+        },
+      },
+    },
+    series: [
+      {
+        type: 'radar',
+        data: [
+          {
+            value: chartData.values,
+            name: '기술 역량',
+            itemStyle: {
+              color: '#3b82f6',
+            },
+            areaStyle: {
+              color: 'rgba(59, 130, 246, 0.3)',
+            },
+            lineStyle: {
+              color: '#3b82f6',
+              width: 2,
+            },
+          },
+        ],
+        animationDuration: 1500,
+        animationEasing: 'cubicOut',
+      },
+    ],
+    tooltip: {
+      trigger: 'item',
+      formatter: (params) => {
+        if (!params || !params.data || !params.data.value) return '';
+        let result = '<strong>기술 역량</strong><br/>';
+        params.data.value.forEach((value, index) => {
+          result += `${chartData.categories[index]}: ${value}<br/>`;
+        });
+        return result;
+      },
+    },
+  };
+
+  myChart.setOption(option);
+
+  // 반응형 처리
+  const resizeHandler = () => {
+    myChart.resize();
+  };
+  window.addEventListener('resize', resizeHandler);
+
+  // 클린업
+  import.meta.hot?.dispose(() => {
+    window.removeEventListener('resize', resizeHandler);
+    myChart.dispose();
+  });
+</script>
+
+<style>
+  #skill-radar-chart {
+    min-height: 300px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(.dark) #skill-radar-chart :global(echarts) {
+      --echarts-axis-color: #94a3b8;
+      --echarts-split-color: #334155;
+      --echarts-area-color: rgba(59, 130, 246, 0.3);
+    }
+  }
+</style>

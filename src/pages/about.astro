@@ -1,4 +1,5 @@
 ---
+import SkillRadarChart from '../components/charts/SkillRadarChart.astro';
 import GitHubActivity from '../components/sections/GitHubActivity.astro';
 import TechBadge from '../components/ui/TechBadge.astro';
 import { certifications } from '../data/certifications';
@@ -47,19 +48,39 @@ const eduExps = experiences.filter((e) => e.type === 'education');
 
     <section class="mb-16" data-aos="fade-up">
       <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-6">기술 스택</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {skills.map((group) => (
-          <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-100 dark:border-slate-700 transition-colors duration-300">
-            <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">
-              {group.category}
-            </h3>
-            <div class="flex flex-wrap gap-2">
-              {group.items.map((tech) => (
-                <TechBadge name={tech} />
-              ))}
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        {/* 레이더 차트 */}
+        <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-100 dark:border-slate-700 transition-colors duration-300">
+          <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4 text-center">
+            기술 역량 레이더
+          </h3>
+          <SkillRadarChart />
+        </div>
+
+        {/* 스킬 목록 */}
+        <div class="space-y-4">
+          {skills.map((group, index) => (
+            <div
+              class="bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-100 dark:border-slate-700 transition-colors duration-300"
+              data-aos="fade-up"
+              data-aos-delay={index * 100}
+            >
+              <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">
+                {group.category}
+              </h3>
+              <div class="flex flex-wrap gap-2">
+                {group.items.map((skill) => (
+                  <div class="flex items-center gap-2">
+                    <TechBadge name={skill.name} />
+                    <span class="text-xs text-slate-500 dark:text-slate-400">
+                      {skill.level}%
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
 
@@ -67,8 +88,13 @@ const eduExps = experiences.filter((e) => e.type === 'education');
       <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-6">경력</h2>
       <div class="space-y-8">
         {
-          workExps.map((exp) => (
-            <div class="relative pl-8 border-l-2 border-slate-200 dark:border-slate-700">
+          workExps.map((exp, index) => (
+            <div
+              class="relative pl-8 border-l-2 border-slate-200 dark:border-slate-700"
+              data-aos="fade-right"
+              data-aos-delay={index * 100}
+              data-aos-duration="800"
+            >
               <div class="absolute -left-[9px] top-0 w-4 h-4 bg-blue-600 rounded-full border-4 border-white dark:border-slate-900" />
               <div class="mb-1">
                 <span class="text-sm text-slate-500 dark:text-slate-400">{exp.period}</span>
@@ -93,8 +119,13 @@ const eduExps = experiences.filter((e) => e.type === 'education');
       <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-6">학력</h2>
       <div class="space-y-8">
         {
-          eduExps.map((exp) => (
-            <div class="relative pl-8 border-l-2 border-slate-200 dark:border-slate-700">
+          eduExps.map((exp, index) => (
+            <div
+              class="relative pl-8 border-l-2 border-slate-200 dark:border-slate-700"
+              data-aos="fade-right"
+              data-aos-delay={index * 100}
+              data-aos-duration="800"
+            >
               <div class="absolute -left-[9px] top-0 w-4 h-4 bg-slate-400 rounded-full border-4 border-white dark:border-slate-900" />
               <div class="mb-1">
                 <span class="text-sm text-slate-500 dark:text-slate-400">{exp.period}</span>
