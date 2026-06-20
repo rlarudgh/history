@@ -36,3 +36,40 @@ export function applyTheme(theme: 'dark' | 'light') {
 export function getCurrentTheme(): 'dark' | 'light' {
   return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
 }
+
+/**
+ * 방문자 카운터를 초기화합니다.
+ * 세션당 1회만 카운트를 증가시킵니다.
+ */
+export function initVisitorCounter(): number {
+  if (typeof localStorage === 'undefined' || typeof sessionStorage === 'undefined') {
+    return 0;
+  }
+
+  const STORAGE_KEY = 'visitor-count';
+  const SESSION_KEY = 'visitor-session';
+
+  // 현재 카운트 가져오기
+  const currentCount = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
+
+  // 세션당 1회만 카운트 증가
+  if (!sessionStorage.getItem(SESSION_KEY)) {
+    const newCount = currentCount + 1;
+    localStorage.setItem(STORAGE_KEY, newCount.toString());
+    sessionStorage.setItem(SESSION_KEY, 'true');
+    return newCount;
+  }
+
+  return currentCount;
+}
+
+/**
+ * 현재 방문자 카운트를 반환합니다.
+ */
+export function getVisitorCount(): number {
+  if (typeof localStorage === 'undefined') {
+    return 0;
+  }
+
+  return parseInt(localStorage.getItem('visitor-count') || '0', 10);
+}

@@ -1,5 +1,6 @@
 ---
 import TechBadge from '../components/ui/TechBadge.astro';
+import GitHubActivity from '../components/sections/GitHubActivity.astro';
 import { certifications } from '../data/certifications';
 import { experiences } from '../data/experiences';
 import { profile } from '../data/profile';
@@ -127,4 +128,6 @@ const eduExps = experiences.filter((e) => e.type === 'education');
       </section>
     )}
   </div>
+
+  <GitHubActivity />
 </Layout>

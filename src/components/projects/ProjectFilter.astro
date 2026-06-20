@@ -1,0 +1,171 @@
+---
+interface Props {
+  categories: string[];
+  techStack: string[];
+  hashtags: string[];
+}
+
+const { categories, techStack } = Astro.props;
+---
+
+<div class="space-y-6">
+  <!-- 카테고리 필터 -->
+  <div>
+    <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
+      카테고리
+    </h3>
+    <div class="flex flex-wrap gap-2" id="category-filters">
+      <button
+        class="filter-btn active"
+        data-filter-type="category"
+        data-filter-value="all"
+        aria-pressed="false"
+      >
+        전체
+      </button>
+      {categories.map((cat) => (
+        <button
+          class="filter-btn"
+          data-filter-type="category"
+          data-filter-value={cat}
+          aria-pressed="false"
+        >
+          {cat}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- 기술 스택 필터 -->
+  <div>
+    <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
+      기술 스택
+    </h3>
+    <div class="flex flex-wrap gap-2" id="techstack-filters">
+      <button
+        class="filter-btn active"
+        data-filter-type="techstack"
+        data-filter-value="all"
+        aria-pressed="false"
+      >
+        전체
+      </button>
+      {techStack.slice(0, 12).map((tech) => (
+        <button
+          class="filter-btn"
+          data-filter-type="techstack"
+          data-filter-value={tech}
+          aria-pressed="false"
+        >
+          {tech}
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
+
+<style>
+  .filter-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    border-radius: 9999px;
+    border: 1px solid rgb(203 213 225);
+    color: rgb(71 85 105);
+    transition: all 200ms;
+    cursor: pointer;
+  }
+
+  .filter-btn:hover {
+    background-color: rgb(239 246 255);
+    border-color: rgb(59 130 246);
+    color: rgb(37 99 235);
+  }
+
+  .filter-btn.active {
+    background-color: rgb(37 99 235);
+    color: white;
+    border-color: rgb(37 99 235);
+  }
+
+  .filter-btn[aria-pressed='true'] {
+    background-color: rgb(37 99 235);
+    color: white;
+    border-color: rgb(37 99 235);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .filter-btn {
+      border-color: rgb(51 65 85);
+      color: rgb(148 163 184);
+    }
+
+    .filter-btn:hover {
+      background-color: rgb(30 41 59);
+      border-color: rgb(96 165 250);
+      color: rgb(96 165 250);
+    }
+
+    .filter-btn.active {
+      background-color: rgb(37 99 235);
+      color: white;
+      border-color: rgb(37 99 235);
+    }
+  }
+</style>
+
+<script>
+  // 필터 버튼 클릭 이벤트 처리
+  const categoryFilters = document.getElementById('category-filters');
+  const techstackFilters = document.getElementById('techstack-filters');
+
+  if (!categoryFilters || !techstackFilters) {
+    // Early exit without return statement
+  } else {
+    let currentCategory = 'all';
+    let currentTechStack = 'all';
+
+    function setupFilters(container: HTMLElement, type: string) {
+      const buttons = container.querySelectorAll('.filter-btn');
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const btnElement = button as HTMLElement;
+          const value = btnElement.dataset.filterValue || 'all';
+
+          // 활성 상태 업데이트
+          buttons.forEach((b) => {
+            (b as HTMLElement).classList.remove('active');
+            b.setAttribute('aria-pressed', 'false');
+          });
+          btnElement.classList.add('active');
+          btnElement.setAttribute('aria-pressed', 'true');
+
+          // 필터 상태 업데이트
+          if (type === 'category') {
+            currentCategory = value;
+          } else if (type === 'techstack') {
+            currentTechStack = value;
+          }
+
+          // 필터 변경 이벤트 발송
+          const filters: { type: string; value: string }[] = [];
+          if (currentCategory !== 'all') {
+            filters.push({ type: 'category', value: currentCategory });
+          }
+          if (currentTechStack !== 'all') {
+            filters.push({ type: 'techstack', value: currentTechStack });
+          }
+
+          document.dispatchEvent(
+            new CustomEvent('filter-change', {
+              detail: { filters },
+            }),
+          );
+        });
+      });
+    }
+
+    setupFilters(categoryFilters, 'category');
+    setupFilters(techstackFilters, 'techstack');
+  }
+</script>

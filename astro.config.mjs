@@ -17,6 +17,9 @@ export default defineConfig({
         configFile: true,
       },
     },
+    define: {
+      'import.meta.env.GITHUB_USERNAME': JSON.stringify(process.env.GITHUB_USERNAME || 'rlarudgh'),
+    },
   },
 
   integrations: [

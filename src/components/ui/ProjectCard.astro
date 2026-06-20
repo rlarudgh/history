@@ -44,6 +44,12 @@ const style = categoryStyles[category] || {
 
 <article
   class="group bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg dark:hover:shadow-slate-900/50 transition-all duration-300 h-full flex flex-col"
+  data-project-card
+  data-title={title}
+  data-description={shortDesc}
+  data-tags={hashtags.join(',')}
+  data-techStack={techStack.join(',')}
+  data-category={category}
 >
   <a href={`/projects/${slug}`} class="flex flex-col h-full">
     <div class="aspect-video overflow-hidden flex-shrink-0 relative" transition:name={`project-image-${slug}`}>

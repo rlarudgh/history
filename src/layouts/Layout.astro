@@ -119,7 +119,7 @@ const jsonLd = {
     <script>
       import AOS from 'aos';
       import 'aos/dist/aos.css';
-      import { getInitialTheme, applyTheme } from '../scripts/theme';
+      import { getInitialTheme, applyTheme, initVisitorCounter } from '../scripts/theme';
 
       function initAOS() {
         AOS.init({
@@ -197,6 +197,7 @@ const jsonLd = {
         initScrollProgress();
         initScrollToTop();
         initToast();
+        initVisitorCounter();
       }
 
       initAll();

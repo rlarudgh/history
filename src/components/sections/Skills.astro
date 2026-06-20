@@ -1,0 +1,97 @@
+---
+import { simpleIcons } from 'simple-icons';
+import type { Iconifier } from 'simple-icons';
+
+interface Skill {
+  name: string;
+  icon: Iconifier;
+  category: 'frontend' | 'backend' | 'database' | 'tools' | 'design';
+}
+
+const skills: Skill[] = [
+  // Frontend
+  { name: 'React', icon: 'react', category: 'frontend' },
+  { name: 'TypeScript', icon: 'typescript', category: 'frontend' },
+  { name: 'Vue.js', icon: 'vuedotjs', category: 'frontend' },
+  { name: 'Next.js', icon: 'nextdotjs', category: 'frontend' },
+  { name: 'Tailwind CSS', icon: 'tailwindcss', category: 'design' },
+  { name: 'Astro', icon: 'astro', category: 'frontend' },
+
+  // Backend
+  { name: 'Node.js', icon: 'nodedotjs', category: 'backend' },
+  { name: 'Python', icon: 'python', category: 'backend' },
+  { name: 'Java', icon: 'java', category: 'backend' },
+  { name: 'Spring', icon: 'spring', category: 'backend' },
+
+  // Database
+  { name: 'PostgreSQL', icon: 'postgresql', category: 'database' },
+  { name: 'MongoDB', icon: 'mongodb', category: 'database' },
+  { name: 'Redis', icon: 'redis', category: 'database' },
+
+  // Tools
+  { name: 'Git', icon: 'git', category: 'tools' },
+  { name: 'Docker', icon: 'docker', category: 'tools' },
+  { name: 'GitHub Actions', icon: 'githubactions', category: 'tools' },
+  { name: 'Jest', icon: 'jest', category: 'tools' },
+  { name: 'Storybook', icon: 'storybook', category: 'tools' },
+  { name: 'Figma', icon: 'figma', category: 'design' },
+];
+
+const skillsByCategory = skills.reduce((acc, skill) => {
+  if (!acc[skill.category]) acc[skill.category] = [];
+  acc[skill.category].push(skill);
+  return acc;
+}, {} as Record<string, Skill[]>);
+
+const categoryNames: Record<string, string> = {
+  frontend: '프론트엔드',
+  backend: '백엔드',
+  database: '데이터베이스',
+  tools: '도구',
+  design: '디자인',
+};
+---
+
+<section id="skills" class="py-20 bg-slate-50 dark:bg-slate-900">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12" data-aos="fade-up">
+      <h2 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-50 mb-4">
+        기술 스택
+      </h2>
+      <p class="text-lg text-slate-600 dark:text-slate-400">
+        사용 가능한 기술들입니다
+      </p>
+    </div>
+
+    {Object.entries(skillsByCategory).map(([category, categorySkills]) => (
+      <div class="mb-12" data-aos="fade-up">
+        <h3 class="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-6 flex items-center gap-2">
+          <span class="w-2 h-2 bg-blue-600 rounded-full"></span>
+          {categoryNames[category] || category}
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {categorySkills.map((skill) => (
+            <div
+              class="group flex flex-col items-center gap-3 p-4 bg-white dark:bg-slate-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+            >
+              <svg
+                role="img"
+                class="w-12 h-12 text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill="currentColor"
+                  d={simpleIcons[skill.icon]}
+                />
+              </svg>
+              <span class="text-sm text-slate-600 dark:text-slate-400 text-center font-medium">
+                {skill.name}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>

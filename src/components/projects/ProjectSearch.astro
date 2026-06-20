@@ -1,0 +1,114 @@
+---
+---
+
+<div class="relative">
+  <input
+    type="search"
+    id="project-search"
+    placeholder="프로젝트 검색..."
+    class="w-full px-4 py-3 pl-12 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+  />
+  <svg
+    class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+    />
+  </svg>
+</div>
+
+<script>
+  const searchInput = document.getElementById('project-search');
+  const projectsGrid = document.getElementById('projects-grid');
+  const noResults = document.getElementById('no-results');
+
+  if (!searchInput || !projectsGrid || !noResults) {
+    // Early return without using return statement
+  } else {
+    let currentQuery = '';
+    let currentFilters: { type: string; value: string }[] = [];
+
+    // 검색 기능
+    searchInput.addEventListener('input', (e) => {
+      currentQuery = e.target.value.toLowerCase().trim();
+      applyFilters();
+    });
+
+    // 필터 이벤트 리스너 (ProjectFilter 컴포넌트에서 호출)
+    document.addEventListener('filter-change', (e: Event) => {
+      const customEvent = e as CustomEvent<{ filters: { type: string; value: string }[] }>;
+      currentFilters = customEvent.detail.filters;
+      applyFilters();
+    });
+
+    function applyFilters() {
+      const projectCards = projectsGrid?.children || [];
+      let visibleCount = 0;
+
+      Array.from(projectCards).forEach((card) => {
+        const cardElement = card as HTMLElement;
+        const title = cardElement.dataset.title?.toLowerCase() || '';
+        const description = cardElement.dataset.description?.toLowerCase() || '';
+        const tags = cardElement.dataset.tags?.toLowerCase() || '';
+        const techStack = cardElement.dataset.techStack?.toLowerCase() || '';
+        const category = cardElement.dataset.category?.toLowerCase() || '';
+
+        // 검색어 매칭 확인
+        const searchMatches =
+          currentQuery === '' ||
+          title.includes(currentQuery) ||
+          description.includes(currentQuery) ||
+          tags.includes(currentQuery) ||
+          techStack.includes(currentQuery);
+
+        // 필터 매칭 확인
+        const filterMatches =
+          currentFilters.length === 0 ||
+          currentFilters.some((filter) => {
+            if (filter.type === 'category') {
+              const cat = filter.value.toLowerCase();
+              const matches = category === cat;
+              return matches;
+            } else if (filter.type === 'techstack') {
+              const tech = filter.value.toLowerCase();
+              const matches = techStack.includes(tech);
+              return matches;
+            }
+            return true;
+          });
+
+        // 검색 AND 필터 조건
+        const matches = searchMatches && filterMatches;
+
+        if (matches) {
+          cardElement.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          cardElement.classList.add('hidden');
+        }
+      });
+
+      // 결과 없음 메시지 표시
+      if (visibleCount === 0) {
+        noResults?.classList.remove('hidden');
+      } else {
+        noResults?.classList.add('hidden');
+      }
+
+      // 카드 개수에 따라 그리드 조정
+      if (visibleCount <= 1) {
+        projectsGrid?.classList.remove('md:grid-cols-2', 'lg:grid-cols-3');
+        projectsGrid?.classList.add('max-w-2xl', 'mx-auto');
+      } else {
+        projectsGrid?.classList.add('md:grid-cols-2', 'lg:grid-cols-3');
+        projectsGrid?.classList.remove('max-w-2xl', 'mx-auto');
+      }
+    }
+  }
+</script>

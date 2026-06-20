@@ -1,0 +1,84 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import ProjectCard from '../../components/ui/ProjectCard.astro';
+import ProjectFilter from '../../components/projects/ProjectFilter.astro';
+import ProjectSearch from '../../components/projects/ProjectSearch.astro';
+
+const allProjects = await getCollection('projects');
+const sortedProjects = allProjects.sort((a, b) => a.data.order - b.data.order);
+
+// 모든 고유 필터 옵션 추출
+const allCategories = [...new Set(allProjects.map((p) => p.data.category))];
+const allTechStack = [...new Set(allProjects.flatMap((p) => p.data.techStack))];
+const allHashtags = [...new Set(allProjects.flatMap((p) => p.data.hashtags))];
+---
+
+<Layout title="프로젝트" description="전체 프로젝트 목록입니다">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <!-- 헤더 -->
+    <div class="mb-12" data-aos="fade-up">
+      <h1 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-50 mb-4">
+        프로젝트
+      </h1>
+      <p class="text-lg text-slate-600 dark:text-slate-400">
+        총 {allProjects.length}개의 프로젝트
+      </p>
+    </div>
+
+    <!-- 검색 & 필터 -->
+    <div class="mb-8 space-y-6" data-aos="fade-up">
+      <ProjectSearch />
+      <ProjectFilter
+        categories={allCategories}
+        techStack={allTechStack}
+        hashtags={allHashtags}
+      />
+    </div>
+
+    <!-- 프로젝트 그리드 -->
+    <div id="projects-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {sortedProjects.map((project) => (
+        <ProjectCard
+          key={project.id}
+          title={project.data.title}
+          shortDesc={project.data.shortDesc}
+          company={project.data.company}
+          role={project.data.role}
+          category={project.data.category}
+          techStack={project.data.techStack}
+          hashtags={project.data.hashtags}
+          coverImage={project.data.coverImage}
+          slug={project.id}
+        />
+      ))}
+    </div>
+
+    <!-- 검색 결과 없음 메시지 -->
+    <div
+      id="no-results"
+      class="hidden text-center py-12"
+      data-aos="fade-up"
+    >
+      <svg
+        class="w-16 h-16 mx-auto mb-4 text-slate-300 dark:text-slate-600"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <p class="text-lg text-slate-600 dark:text-slate-400 mb-2">
+        검색 결과가 없습니다
+      </p>
+      <p class="text-sm text-slate-500 dark:text-slate-500">
+        다른 검색어나 필터를 시도해보세요
+      </p>
+    </div>
+  </div>
+</Layout>
