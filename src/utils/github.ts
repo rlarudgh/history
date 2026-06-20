@@ -50,6 +50,38 @@ export interface GitHubIssue {
   };
 }
 
+interface GitHubEvent {
+  type: string;
+  created_at: string;
+  repo: {
+    name: string;
+  };
+  payload: {
+    commits?: Array<{
+      sha: string;
+      message: string;
+      html_url?: string;
+    }>;
+  };
+}
+
+interface GitHubSearchItem {
+  title: string;
+  html_url: string;
+  state: string;
+  created_at: string;
+  updated_at: string;
+  closed_at: string | null;
+  repository_url: string;
+  pull_request?: {
+    merged_at: string | null;
+  };
+}
+
+interface GitHubSearchResponse {
+  items: GitHubSearchItem[];
+}
+
 async function fetchWithAuth(url: string, token: string): Promise<Response> {
   const response = await fetch(url, {
     headers: {
@@ -82,10 +114,17 @@ export async function getRecentCommits(
     const events = await response.json();
 
     const pushEvents = events.filter(
-      (event: any) => event.type === 'PushEvent' && event.payload?.commits?.length > 0
+      (
+        event: GitHubEvent
+      ): event is GitHubEvent & {
+        payload: { commits: NonNullable<GitHubEvent['payload']['commits']> };
+      } =>
+        event.type === 'PushEvent' &&
+        event.payload.commits !== undefined &&
+        event.payload.commits.length > 0
     );
 
-    return pushEvents.slice(0, count).map((event: any) => {
+    return pushEvents.slice(0, count).map((event) => {
       const commit = event.payload.commits[0];
       const repoName = event.repo.name;
 
@@ -97,8 +136,7 @@ export async function getRecentCommits(
         date: new Date(event.created_at),
       };
     });
-  } catch (error) {
-    console.error('[getRecentCommits] Error:', error);
+  } catch {
     return [];
   }
 }
@@ -111,11 +149,16 @@ export async function getRecentPRs(
   try {
     const searchUrl = `https://api.github.com/search/issues?q=author:${username}+type:pr+is:public&sort=updated&order=desc&per_page=${count}`;
     const response = await fetchWithAuth(searchUrl, token);
-    const data = await response.json();
+    const data = (await response.json()) as GitHubSearchResponse;
 
-    return data.items.map((item: any) => {
+    return data.items.map((item: GitHubSearchItem) => {
       const repoName = item.repository_url.replace('https://api.github.com/repos/', '');
-      const status = item.state === 'open' ? 'open' : item.closed_at === item.pull_request.merged_at ? 'merged' : 'closed';
+      const status =
+        item.state === 'open'
+          ? 'open'
+          : item.closed_at === item.pull_request?.merged_at
+            ? 'merged'
+            : 'closed';
 
       return {
         type: 'pr' as const,
@@ -126,8 +169,7 @@ export async function getRecentPRs(
         status,
       };
     });
-  } catch (error) {
-    console.error('[getRecentPRs] Error:', error);
+  } catch {
     return [];
   }
 }
@@ -140,9 +182,9 @@ export async function getRecentIssues(
   try {
     const searchUrl = `https://api.github.com/search/issues?q=author:${username}+type:issue+is:public&sort=updated&order=desc&per_page=${count}`;
     const response = await fetchWithAuth(searchUrl, token);
-    const data = await response.json();
+    const data = (await response.json()) as GitHubSearchResponse;
 
-    return data.items.map((item: any) => {
+    return data.items.map((item: GitHubSearchItem) => {
       const repoName = item.repository_url.replace('https://api.github.com/repos/', '');
 
       return {
@@ -154,8 +196,7 @@ export async function getRecentIssues(
         status: item.state as 'open' | 'closed',
       };
     });
-  } catch (error) {
-    console.error('[getRecentIssues] Error:', error);
+  } catch {
     return [];
   }
 }
@@ -176,8 +217,7 @@ export async function getGitHubActivity(
     allActivities.sort((a, b) => b.date.getTime() - a.date.getTime());
 
     return allActivities.slice(0, 20);
-  } catch (error) {
-    console.error('[getGitHubActivity] Error:', error);
+  } catch {
     return [];
   }
 }

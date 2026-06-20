@@ -1,6 +1,6 @@
 ---
-import { simpleIcons } from 'simple-icons';
 import type { Iconifier } from 'simple-icons';
+import { simpleIcons } from 'simple-icons';
 
 interface Skill {
   name: string;
@@ -37,11 +37,14 @@ const skills: Skill[] = [
   { name: 'Figma', icon: 'figma', category: 'design' },
 ];
 
-const skillsByCategory = skills.reduce((acc, skill) => {
-  if (!acc[skill.category]) acc[skill.category] = [];
-  acc[skill.category].push(skill);
-  return acc;
-}, {} as Record<string, Skill[]>);
+const skillsByCategory = skills.reduce(
+  (acc, skill) => {
+    if (!acc[skill.category]) acc[skill.category] = [];
+    acc[skill.category].push(skill);
+    return acc;
+  },
+  {} as Record<string, Skill[]>
+);
 
 const categoryNames: Record<string, string> = {
   frontend: '프론트엔드',

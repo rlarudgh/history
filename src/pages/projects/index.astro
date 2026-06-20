@@ -1,9 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
-import ProjectCard from '../../components/ui/ProjectCard.astro';
 import ProjectFilter from '../../components/projects/ProjectFilter.astro';
 import ProjectSearch from '../../components/projects/ProjectSearch.astro';
+import ProjectCard from '../../components/ui/ProjectCard.astro';
+import Layout from '../../layouts/Layout.astro';
 
 const allProjects = await getCollection('projects');
 const sortedProjects = allProjects.sort((a, b) => a.data.order - b.data.order);
