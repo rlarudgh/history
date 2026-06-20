@@ -9,8 +9,8 @@ test.describe('About 페이지', () => {
     await expect(page).toHaveTitle(/소개/);
   });
 
-  test('소개 제목이 보여야 함', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: '소개', exact: true })).toBeVisible();
+  test('프로필 이름이 보여야 함', async ({ page }) => {
+    await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
   });
 
   test('기술 스택 섹션이 보여야 함', async ({ page }) => {

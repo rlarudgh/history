@@ -38,6 +38,14 @@ test.describe('다크모드 기능', () => {
     await toggle.click();
     await expect(checkbox).toBeChecked();
 
+    // 모바일인 경우 메뉴 열기
+    const viewport = page.viewportSize();
+    const isMobile = viewport && viewport.width < 768;
+
+    if (isMobile) {
+      await page.getByRole('button', { name: '메뉴 열기' }).click();
+    }
+
     // About 페이지로 이동
     await page.getByRole('link', { name: 'About' }).click();
     await expect(page).toHaveURL('/about');
@@ -58,8 +66,16 @@ test.describe('다크모드 기능', () => {
     const checkbox = page.getByRole('checkbox', { name: '테마 전환' });
     await expect(checkbox).not.toBeChecked();
 
+    // 모바일인 경우 메뉴 열기
+    const viewport = page.viewportSize();
+    const isMobile = viewport && viewport.width < 768;
+
+    if (isMobile) {
+      await page.getByRole('button', { name: '메뉴 열기' }).click();
+    }
+
     // Projects 페이지로 이동
-    await page.getByRole('navigation').getByRole('link', { name: 'Project' }).click();
+    await page.getByRole('link', { name: 'Project' }).click();
     await expect(page).toHaveURL('/projects');
 
     // 라이트모드 유지 확인
@@ -81,23 +97,34 @@ test.describe('다크모드 기능', () => {
     await expect(checkbox).toBeChecked();
 
     const htmlElement = page.locator('html');
+    const viewport = page.viewportSize();
+    const isMobile = viewport && viewport.width < 768;
+
+    const openMenu = async () => {
+      if (isMobile) {
+        await page.getByRole('button', { name: '메뉴 열기' }).click();
+      }
+    };
 
     // About 페이지로 이동
+    await openMenu();
     await page.getByRole('link', { name: 'About' }).click();
     await expect(page).toHaveURL('/about');
     await expect(htmlElement).toHaveClass(/dark/);
 
     // Projects 페이지로 이동
-    await page.getByRole('navigation').getByRole('link', { name: 'Project' }).click();
+    await openMenu();
+    await page.getByRole('link', { name: 'Project' }).click();
     await expect(page).toHaveURL('/projects');
     await expect(htmlElement).toHaveClass(/dark/);
 
     // Contact 페이지로 이동
+    await openMenu();
     await page.getByRole('link', { name: 'Contact' }).click();
     await expect(page).toHaveURL('/contact');
     await expect(htmlElement).toHaveClass(/dark/);
 
-    // 홈으로 돌아오기
+    // 홉으로 돌아오기
     await page.getByRole('link', { name: 'kkh.dev' }).click();
     await expect(page).toHaveURL('/');
     await expect(htmlElement).toHaveClass(/dark/);

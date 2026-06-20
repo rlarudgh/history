@@ -30,7 +30,15 @@ test.describe('랜딩 페이지', () => {
   });
 
   test('네비게이션 링크가 동작해야 함', async ({ page }) => {
-    await page.getByRole('link', { name: '소개' }).click();
+    // 모바일인 경우 메뉴 열기
+    const viewport = page.viewportSize();
+    const isMobile = viewport && viewport.width < 768;
+
+    if (isMobile) {
+      await page.getByRole('button', { name: '메뉴 열기' }).click();
+    }
+
+    await page.getByRole('link', { name: 'About' }).click();
     await expect(page).toHaveURL('/about');
   });
 });

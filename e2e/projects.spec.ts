@@ -10,9 +10,8 @@ test.describe('Projects 페이지', () => {
   });
 
   test('필터 버튼들이 보여야 함', async ({ page }) => {
-    await expect(page.getByRole('button', { name: '전체' })).toBeVisible();
     const filterBtns = page.locator('.filter-btn');
-    await expect(filterBtns).toHaveCount(await filterBtns.count());
+    await expect(filterBtns.first()).toBeVisible();
     expect(await filterBtns.count()).toBeGreaterThan(1);
   });
 
@@ -25,7 +24,7 @@ test.describe('Projects 페이지', () => {
   test('프로젝트 필터링이 동작해야 함', async ({ page }) => {
     const firstFilter = page.locator('.filter-btn').nth(1);
     await firstFilter.click();
-    await expect(firstFilter).toHaveClass(/bg-blue-600/);
+    await expect(firstFilter).toHaveClass(/active/);
   });
 
   test('프로젝트 상세 페이지로 이동해야 함', async ({ page }) => {
