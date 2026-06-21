@@ -12,30 +12,31 @@ export const skills: SkillCategory[] = [
   {
     category: 'Web & WebView',
     items: [
-      { name: 'React', level: 85 },
-      { name: 'Next.js', level: 80 },
-      { name: 'Vue2', level: 70 },
-      { name: 'Astro', level: 75 },
+      { name: 'React', level: 90 },
+      { name: 'Next.js', level: 90 },
+      { name: 'Vue2', level: 85 },
+      { name: 'Remix', level: 80 },
+      { name: 'Astro', level: 70 },
     ],
   },
   {
     category: 'App(Native)',
     items: [
+      { name: 'Flutter', level: 85 },
       { name: 'Kotlin', level: 80 },
-      { name: 'Flutter', level: 75 },
-      { name: 'React-Native', level: 70 },
+      { name: 'React-Native', level: 75 },
     ],
   },
   {
     category: 'Server',
     items: [
       { name: 'Nest.js', level: 80 },
-      { name: 'Spring boot', level: 70 },
+      { name: 'Spring boot', level: 75 },
       { name: 'Fast API', level: 75 },
-      { name: 'MySQL', level: 75 },
-      { name: 'PostgreSQL', level: 70 },
-      { name: 'sqlite', level: 65 },
-      { name: 'golang', level: 70 },
+      { name: 'MySQL', level: 80 },
+      { name: 'PostgreSQL', level: 75 },
+      { name: 'sqlite', level: 75 },
+      { name: 'golang', level: 50 },
     ],
   },
   {
@@ -44,8 +45,8 @@ export const skills: SkillCategory[] = [
       { name: 'Git', level: 85 },
       { name: 'Figma', level: 70 },
       { name: 'Jira', level: 75 },
-      { name: 'Claude Code', level: 80 },
-      { name: 'Codex', level: 70 },
+      { name: 'Claude Code', level: 90 },
+      { name: 'Codex', level: 80 },
     ],
   },
 ];

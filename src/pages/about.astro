@@ -1,11 +1,9 @@
 ---
-import SkillRadarChart from '../components/charts/SkillRadarChart.astro';
 import GitHubActivity from '../components/sections/GitHubActivity.astro';
-import TechBadge from '../components/ui/TechBadge.astro';
+import SkillStack from '../components/sections/SkillStack.astro';
 import { certifications } from '../data/certifications';
 import { experiences } from '../data/experiences';
 import { profile } from '../data/profile';
-import { skills } from '../data/skills';
 import Layout from '../layouts/Layout.astro';
 
 const workExps = experiences.filter((e) => e.type === 'work');
@@ -13,8 +11,8 @@ const eduExps = experiences.filter((e) => e.type === 'education');
 ---
 
 <Layout
-  title="소개 | 포트폴리오"
-  description="개발자 자기소개 페이지입니다."
+  title="김경호 | 포트폴리오"
+  description="소프트웨어 엔지니어 김경호의 포트폴리오 페이지입니다. 기술 스택, 경력, 학력, 자격증 등 자세한 정보를 확인할 수 있습니다."
 >
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
     {/* Profile Header */}
@@ -37,6 +35,11 @@ const eduExps = experiences.filter((e) => e.type === 'education');
           {profile.name}
         </h1>
         <p class="text-slate-600 dark:text-slate-400">{profile.role}</p>
+        <div class="flex flex-wrap gap-4 mt-3 text-sm text-slate-500 dark:text-slate-400 justify-center sm:justify-start">
+          {profile.age && <span>만 {profile.age}세 ({profile.birthYear}년생)</span>}
+          {profile.email && <a href={`mailto:${profile.email}`} class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{profile.email}</a>}
+          {profile.phone && <span>{profile.phone}</span>}
+        </div>
       </div>
     </div>
 
@@ -48,35 +51,81 @@ const eduExps = experiences.filter((e) => e.type === 'education');
 
     <section class="mb-16" data-aos="fade-up">
       <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-6">기술 스택</h2>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-        {/* 레이더 차트 */}
-        <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-100 dark:border-slate-700 transition-colors duration-300">
-          <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4 text-center">
-            기술 역량 레이더
-          </h3>
-          <SkillRadarChart />
-        </div>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">
+        분야를 클릭하면 세부 역량을 확인할 수 있습니다.
+      </p>
+      <SkillStack />
+    </section>
 
-        {/* 스킬 목록 */}
-        <div class="space-y-4">
-          {skills.map((group, index) => (
+    <section class="mb-16" data-aos="fade-up">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-6">경력</h2>
+      <div class="relative">
+        {/* 연속된 세로 타임라인 선 (애니메이션 없음) */}
+        <div
+          class="absolute left-[7px] top-2 bottom-2 w-0.5 bg-slate-200 dark:bg-slate-700"
+          aria-hidden="true"
+        />
+        <div class="space-y-8">
+          {workExps.map((exp, index) => (
             <div
-              class="bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-100 dark:border-slate-700 transition-colors duration-300"
+              class="relative pl-8"
               data-aos="fade-up"
               data-aos-delay={index * 100}
+              data-aos-duration="800"
             >
-              <h3 class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">
-                {group.category}
-              </h3>
-              <div class="flex flex-wrap gap-2">
-                {group.items.map((skill) => (
-                  <div class="flex items-center gap-2">
-                    <TechBadge name={skill.name} />
-                    <span class="text-xs text-slate-500 dark:text-slate-400">
-                      {skill.level}%
-                    </span>
+              <div class="absolute left-0 top-1 w-4 h-4 bg-blue-600 rounded-full border-4 border-white dark:border-slate-900" />
+              <button
+                type="button"
+                class="exp-toggle w-full text-left group"
+                aria-expanded={index === 0 ? 'true' : 'false'}
+                aria-controls={`exp-detail-${exp.id}`}
+              >
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <span class="text-sm text-slate-500 dark:text-slate-400">{exp.period}</span>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">{exp.title}</h3>
+                    <p class="text-slate-600 dark:text-slate-400">{exp.organization}</p>
                   </div>
-                ))}
+                  <svg
+                    class="exp-chevron mt-1 w-5 h-5 shrink-0 text-slate-400 group-hover:text-blue-500 transition-transform duration-300"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                  </svg>
+                </div>
+              </button>
+
+              <div
+                id={`exp-detail-${exp.id}`}
+                class="exp-detail grid transition-[grid-template-rows] duration-300 ease-out"
+                data-open={index === 0 ? 'true' : 'false'}
+                style="grid-template-rows: 0fr"
+              >
+                <div class="overflow-hidden min-h-0">
+                  <div class="pt-3">
+                    {exp.description && (
+                      <p class="text-slate-600 dark:text-slate-400 text-sm mb-3">{exp.description}</p>
+                    )}
+                    {exp.details && (
+                      <ul class="list-disc pl-5 space-y-1.5 text-sm text-slate-600 dark:text-slate-400 mb-3">
+                        {exp.details.map((item) => (
+                          <li>{item}</li>
+                        ))}
+                      </ul>
+                    )}
+                    <div class="flex flex-wrap gap-2">
+                      {exp.tags?.map((tag) => (
+                        <span class="px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded text-xs font-medium">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           ))}
@@ -85,48 +134,22 @@ const eduExps = experiences.filter((e) => e.type === 'education');
     </section>
 
     <section class="mb-16" data-aos="fade-up">
-      <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-6">경력</h2>
-      <div class="space-y-8">
-        {
-          workExps.map((exp, index) => (
-            <div
-              class="relative pl-8 border-l-2 border-slate-200 dark:border-slate-700"
-              data-aos="fade-right"
-              data-aos-delay={index * 100}
-              data-aos-duration="800"
-            >
-              <div class="absolute -left-[9px] top-0 w-4 h-4 bg-blue-600 rounded-full border-4 border-white dark:border-slate-900" />
-              <div class="mb-1">
-                <span class="text-sm text-slate-500 dark:text-slate-400">{exp.period}</span>
-              </div>
-              <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">{exp.title}</h3>
-              <p class="text-slate-600 dark:text-slate-400 mb-2">{exp.organization}</p>
-              <p class="text-slate-600 dark:text-slate-400 text-sm mb-3">{exp.description}</p>
-              <div class="flex flex-wrap gap-2">
-                {exp.tags?.map((tag) => (
-                  <span class="px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded text-xs font-medium">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))
-        }
-      </div>
-    </section>
-
-    <section class="mb-16" data-aos="fade-up">
       <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-6">학력</h2>
-      <div class="space-y-8">
-        {
-          eduExps.map((exp, index) => (
+      <div class="relative">
+        {/* 연속된 세로 타임라인 선 (애니메이션 없음) */}
+        <div
+          class="absolute left-[7px] top-2 bottom-2 w-0.5 bg-slate-200 dark:bg-slate-700"
+          aria-hidden="true"
+        />
+        <div class="space-y-8">
+          {eduExps.map((exp, index) => (
             <div
-              class="relative pl-8 border-l-2 border-slate-200 dark:border-slate-700"
-              data-aos="fade-right"
+              class="relative pl-8"
+              data-aos="fade-up"
               data-aos-delay={index * 100}
               data-aos-duration="800"
             >
-              <div class="absolute -left-[9px] top-0 w-4 h-4 bg-slate-400 rounded-full border-4 border-white dark:border-slate-900" />
+              <div class="absolute left-0 top-1 w-4 h-4 bg-slate-400 rounded-full border-4 border-white dark:border-slate-900" />
               <div class="mb-1">
                 <span class="text-sm text-slate-500 dark:text-slate-400">{exp.period}</span>
               </div>
@@ -134,8 +157,8 @@ const eduExps = experiences.filter((e) => e.type === 'education');
               <p class="text-slate-600 dark:text-slate-400 mb-2">{exp.organization}</p>
               <p class="text-slate-600 dark:text-slate-400 text-sm">{exp.description}</p>
             </div>
-          ))
-        }
+          ))}
+        </div>
       </div>
     </section>
 
@@ -162,3 +185,29 @@ const eduExps = experiences.filter((e) => e.type === 'education');
 
   <GitHubActivity />
 </Layout>
+
+<script>
+  // 경력 아코디언 토글
+  const toggles = document.querySelectorAll<HTMLButtonElement>('.exp-toggle');
+
+  toggles.forEach((btn) => {
+    const panelId = btn.getAttribute('aria-controls');
+    const panel = panelId ? document.getElementById(panelId) : null;
+    if (!panel) return;
+
+    const chevron = btn.querySelector<HTMLElement>('.exp-chevron');
+
+    const setOpen = (open: boolean) => {
+      btn.setAttribute('aria-expanded', String(open));
+      panel.style.gridTemplateRows = open ? '1fr' : '0fr';
+      if (chevron) chevron.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+    };
+
+    // 초기 상태 (첫 항목은 펼침)
+    setOpen(panel.dataset.open === 'true');
+
+    btn.addEventListener('click', () => {
+      setOpen(btn.getAttribute('aria-expanded') !== 'true');
+    });
+  });
+</script>

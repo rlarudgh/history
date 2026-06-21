@@ -1,0 +1,127 @@
+---
+import { skills } from '../../data/skills';
+import TechBadge from '../ui/TechBadge.astro';
+
+// 분야명을 탭 라벨로 사용
+const tabs = skills.map((group) => ({
+  ...group,
+  label: group.category,
+}));
+---
+
+<div class="skill-tabs flex flex-col sm:flex-row gap-6">
+  {/* 분야 탭 (왼쪽 세로 리스트, 모바일에서는 가로 스크롤) */}
+  <div
+    role="tablist"
+    aria-label="기술 분야"
+    aria-orientation="vertical"
+    class="flex sm:flex-col gap-2 sm:w-44 shrink-0 overflow-x-auto"
+  >
+    {tabs.map((group, index) => (
+      <button
+        type="button"
+        role="tab"
+        id={`skill-tab-${index}`}
+        aria-controls={`skill-grid-${index}`}
+        aria-selected={index === 0 ? 'true' : 'false'}
+        tabindex={index === 0 ? '0' : '-1'}
+        class="skill-tab flex items-center justify-between gap-2 whitespace-nowrap px-4 py-2.5 rounded-lg text-sm font-semibold border transition-colors border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-300 dark:hover:border-blue-500 aria-selected:bg-blue-600 aria-selected:text-white aria-selected:border-blue-600"
+      >
+        {group.label}
+        <span class="text-xs opacity-70">{group.items.length}</span>
+      </button>
+    ))}
+  </div>
+
+  {/* 선택 분야의 range bar (패널을 같은 셀에 쌓아 영역 높이를 가장 큰 분야에 맞춤) */}
+  <div class="skill-panels grid flex-1">
+    {tabs.map((group, index) => (
+      <div
+        id={`skill-grid-${index}`}
+        role="tabpanel"
+        aria-labelledby={`skill-tab-${index}`}
+        aria-hidden={index !== 0 ? 'true' : 'false'}
+        class="skill-grid [grid-area:1/1] bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 p-6 transition-opacity duration-300 aria-hidden:invisible aria-hidden:opacity-0"
+      >
+        <div class="space-y-4">
+          {group.items.map((skill) => (
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                  <TechBadge name={skill.name} iconOnly />
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    {skill.name}
+                  </span>
+                </div>
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                  {skill.level}%
+                </span>
+              </div>
+              <div class="h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                <div
+                  class="skill-bar h-full rounded-full bg-blue-500 transition-[width] duration-700 ease-out"
+                  style="width: 0"
+                  data-level={skill.level}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+<script>
+  const containers = document.querySelectorAll<HTMLElement>('.skill-tabs');
+
+  containers.forEach((container) => {
+    const tabs = Array.from(container.querySelectorAll<HTMLButtonElement>('.skill-tab'));
+
+    const select = (activeIndex: number, focus = false) => {
+      tabs.forEach((tab, i) => {
+        const selected = i === activeIndex;
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+
+        const panelId = tab.getAttribute('aria-controls');
+        const panel = panelId ? document.getElementById(panelId) : null;
+        if (!panel) return;
+
+        panel.setAttribute('aria-hidden', String(!selected));
+
+        // range bar 애니메이션 (선택 시 채우고, 해제 시 리셋)
+        const bars = panel.querySelectorAll<HTMLElement>('.skill-bar');
+        bars.forEach((bar) => {
+          bar.style.width = selected ? `${bar.dataset.level}%` : '0';
+        });
+      });
+      if (focus) tabs[activeIndex]?.focus();
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(i));
+      tab.addEventListener('keydown', (event) => {
+        const next = event.key === 'ArrowDown' || event.key === 'ArrowRight';
+        const prev = event.key === 'ArrowUp' || event.key === 'ArrowLeft';
+        if (next || prev) {
+          event.preventDefault();
+          const dir = next ? 1 : -1;
+          select((i + dir + tabs.length) % tabs.length, true);
+        }
+      });
+    });
+
+    // 초기 선택 탭의 range bar를 채움 (없으면 첫 탭)
+    const initial = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+    select(initial === -1 ? 0 : initial);
+  });
+</script>
+
+<style>
+  @media (prefers-reduced-motion: reduce) {
+    .skill-grid {
+      transition: none;
+    }
+  }
+</style>

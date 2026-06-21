@@ -26,7 +26,9 @@ test.describe('랜딩 페이지', () => {
   });
 
   test('Contact CTA 섹션이 보여야 함', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: /함께 일필요가 있으신가요/ })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /함께 일하고 싶은 마음이 있으신가요?/ })
+    ).toBeVisible();
   });
 
   test('네비게이션 링크가 동작해야 함', async ({ page }) => {

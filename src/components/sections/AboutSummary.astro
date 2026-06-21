@@ -1,5 +1,6 @@
 ---
 import { experiences } from '../../data/experiences';
+import { profile } from '../../data/profile';
 
 const workExps = experiences.filter((e) => e.type === 'work');
 ---
@@ -17,7 +18,7 @@ const workExps = experiences.filter((e) => e.type === 'work');
           작성하는 것을 지향합니다.
         </p>
         <p class="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-          {workExps.length}년 이상의 실무 경험을 바탕으로 다양한 도메인의
+          {profile.careerYears}년 이상의 실무 경험을 바탕으로 다양한 도메인의
           프로젝트를 수행해왔습니다.
         </p>
         <a

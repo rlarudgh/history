@@ -1,5 +1,5 @@
 {
-  "name": "portfolio-history",
+  "name": "kkh-logs-portfolio",
   "type": "module",
   "version": "0.0.1",
   "engines": {
@@ -23,7 +23,6 @@
     "@tailwindcss/vite": "^4.3.0",
     "aos": "^2.3.4",
     "astro": "^6.3.8",
-    "echarts": "^6.1.0",
     "simple-icons": "^16.21.0",
     "tailwindcss": "^4.3.0"
   },
