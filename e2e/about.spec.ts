@@ -15,8 +15,12 @@ test.describe('About 페이지', () => {
 
   test('기술 스택 섹션이 보여야 함', async ({ page }) => {
     await expect(page.getByRole('heading', { name: '기술 스택' })).toBeVisible();
-    const badges = page.locator('[class*="badge"], [class*="Badge"]');
-    expect(await badges.count()).toBeGreaterThan(0);
+    // 레이더 차트가 표시되는지 확인
+    const radarChart = page.locator('#skill-radar-chart');
+    await expect(radarChart).toBeVisible();
+    // 스킬 목록이 표시되는지 확인
+    const skillGroups = page.locator('section:has(h2:text("기술 스택")) .bg-slate-50');
+    expect(await skillGroups.count()).toBeGreaterThan(0);
   });
 
   test('경력 섹션이 보여야 함', async ({ page }) => {
