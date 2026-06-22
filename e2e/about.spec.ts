@@ -6,7 +6,7 @@ test.describe('About 페이지', () => {
   });
 
   test('페이지가 정상적으로 로드되어야 함', async ({ page }) => {
-    await expect(page).toHaveTitle(/소개/);
+    await expect(page).toHaveTitle(/김경호/);
   });
 
   test('프로필 이름이 보여야 함', async ({ page }) => {
