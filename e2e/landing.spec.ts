@@ -13,7 +13,7 @@ test.describe('홈 (단일 페이지)', () => {
 
   test('zsh 터미널이 타이핑을 시작해야 함', async ({ page }) => {
     await expect(page.getByText('~/kkh.dev — zsh')).toBeVisible();
-    await expect(page.locator('#terminal-output')).toContainText('whoami');
+    await expect(page.getByRole('log', { name: '터미널 출력' })).toContainText('whoami');
   });
 
   test('모든 홈 섹션이 존재해야 함', async ({ page }) => {

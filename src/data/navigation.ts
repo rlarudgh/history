@@ -10,6 +10,7 @@ export const navLinks: NavLink[] = [
   { href: '/#experience', label: 'Experience', section: 'experience' },
   { href: '/#skills', label: 'Skills', section: 'skills' },
   { href: '/projects', label: 'Projects', section: 'projects' },
+  { href: '/#workflow', label: 'Workflow', section: 'workflow' },
   { href: '/blog', label: 'Blog' },
   { href: '/#contact', label: 'Contact', section: 'contact' },
 ];
