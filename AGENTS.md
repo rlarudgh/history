@@ -6,7 +6,7 @@
 
 ## 기술 스택
 
-- **Framework**: Astro v6 (정적 출력)
+- **Framework**: Astro v7 (정적 출력 + 블로그만 Cloudflare SSR)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS v4
 - **Content**: Astro Content Collections + MDX

@@ -4,7 +4,7 @@
 
 ### Framework
 
-#### Astro v6
+#### Astro v7
 - 정적 사이트 생성 (SSG)에 최적화된 프레임워크
 - Zero JS by default - 필요한 컴포넌트에만 JavaScript 로드
 - Content Collections로 타입 안전한 콘텐츠 관리

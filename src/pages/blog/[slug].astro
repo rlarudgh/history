@@ -9,7 +9,7 @@ import { getHolologConfig, getPost, isHolologConfigured } from '../../lib/hololo
 
 const { slug } = Astro.params;
 
-// Astro v6 + Cloudflare: 런타임 바인딩은 cloudflare:workers 의 env 로 읽는다
+// Astro v6+ / Cloudflare: 런타임 바인딩은 cloudflare:workers 의 env 로 읽는다
 const config = getHolologConfig(env as unknown as Record<string, string | undefined>);
 
 let post: Awaited<ReturnType<typeof getPost>> = null;

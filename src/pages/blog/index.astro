@@ -5,7 +5,7 @@ import { env } from 'cloudflare:workers';
 import Layout from '../../layouts/Layout.astro';
 import { getHolologConfig, getPosts, isHolologConfigured } from '../../lib/hololog';
 
-// Astro v6 + Cloudflare: 런타임 바인딩은 cloudflare:workers 의 env 로 읽는다
+// Astro v6+ / Cloudflare: 런타임 바인딩은 cloudflare:workers 의 env 로 읽는다
 const config = getHolologConfig(env as unknown as Record<string, string | undefined>);
 
 let posts: Awaited<ReturnType<typeof getPosts>> = [];

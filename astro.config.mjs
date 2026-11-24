@@ -13,6 +13,15 @@ export default defineConfig({
   output: 'static',
   adapter: cloudflare(),
 
+  // Astro 7 기본값('jsx')은 인라인 요소 사이 줄바꿈 공백을 제거함 → 기존 렌더링 유지
+  compressHTML: true,
+
+  // /projects/index.html 대신 /projects.html 로 출력해 Cloudflare가 /projects → /projects/ 로
+  // 리다이렉트하지 않게 함 (내비·링크는 슬래시 없는 경로 기준)
+  build: {
+    format: 'file',
+  },
+
   // About/Contact는 홈 섹션으로 통합됨
   redirects: {
     '/about': '/#about',
