@@ -8,8 +8,11 @@
  * - HOLOLOG_API_URL  (기본: https://hololog.vercel.app)
  * - HOLOLOG_API_KEY  (읽기 키, 필수)
  *
- * Cloudflare 런타임에서는 `cloudflare:workers` 의 `env`,
- * 로컬 dev에서는 `import.meta.env`(.env)에서 값을 읽는다.
+ * 값은 실행 시점의 Cloudflare 바인딩(`cloudflare:workers` 의 `env`)에서만 읽는다.
+ * - 배포: Cloudflare 대시보드의 Secret(암호화된 변수)으로 설정
+ * - 로컬 dev: 프로젝트 루트의 `.dev.vars` 파일 (gitignore 대상)
+ *
+ * ⚠️ `import.meta.env` 로 읽으면 빌드 시점 값이 서버 번들에 문자열로 박히므로 사용하지 않는다.
  */
 
 export interface PostSummary {
@@ -38,9 +41,9 @@ type EnvLike = Record<string, string | undefined>;
 
 const DEFAULT_BASE_URL = 'https://hololog.vercel.app';
 
-/** 런타임/빌드 환경에서 API 설정을 읽는다. */
+/** 실행 시점 바인딩에서 API 설정을 읽는다. (빌드 시점 값은 사용하지 않음) */
 export function getHolologConfig(runtimeEnv?: EnvLike): HolologConfig {
-  const env: EnvLike = { ...import.meta.env, ...runtimeEnv };
+  const env: EnvLike = runtimeEnv ?? {};
   return {
     baseUrl: (env.HOLOLOG_API_URL || DEFAULT_BASE_URL).replace(/\/$/, ''),
     apiKey: env.HOLOLOG_API_KEY || '',

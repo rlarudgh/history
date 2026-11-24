@@ -41,14 +41,20 @@ GitHub Actions (CI)
 |------|-----|
 | Framework | Astro |
 | Build command | `bun run build` |
-| Build output directory | `dist` |
+| Build output directory | `dist/client` ⚠️ `dist` 아님 |
 | Root directory | `/` |
+
+> ⚠️ 출력 디렉토리를 `dist`로 두면 정적 파일이 `/client/...` 아래로 올라가 CSS가 깨지고,
+> `dist/server`(서버 번들)까지 공개 URL로 노출됩니다. 반드시 `dist/client`로 지정하세요.
+> Pages에서는 블로그(SSR, `dist/server`)가 동작하지 않으므로, 블로그까지 쓰려면 Cloudflare **Workers**로
+> 배포합니다: `bun run build && bunx wrangler deploy --config dist/server/wrangler.json`
 
 5. 환경 변수 (필요시):
 
 | 변수 | 설명 |
 |------|------|
 | `NODE_VERSION` | `22.12.0` |
+| `HOLOLOG_API_KEY` | 블로그 API 키. **Secret(암호화)으로, 런타임 변수로만** 설정. 로컬 dev는 `.dev.vars` |
 
 ### 설정 파일
 
