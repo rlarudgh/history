@@ -11,9 +11,9 @@ const { categories, techStack } = Astro.props;
 <div class="space-y-6">
   <!-- 카테고리 필터 -->
   <div>
-    <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
+    <h2 class="mb-3 font-mono text-xs tracking-widest uppercase text-slate-500 dark:text-slate-400">
       카테고리
-    </h3>
+    </h2>
     <div class="flex flex-wrap gap-2" id="category-filters">
       <button
         class="filter-btn active"
@@ -38,9 +38,9 @@ const { categories, techStack } = Astro.props;
 
   <!-- 기술 스택 필터 -->
   <div>
-    <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
+    <h2 class="mb-3 font-mono text-xs tracking-widest uppercase text-slate-500 dark:text-slate-400">
       기술 스택
-    </h3>
+    </h2>
     <div class="flex flex-wrap gap-2" id="techstack-filters">
       <button
         class="filter-btn active"
@@ -66,50 +66,45 @@ const { categories, techStack } = Astro.props;
 
 <style>
   .filter-btn {
-    padding: 0.5rem 1rem;
+    padding: 0.375rem 0.875rem;
     font-size: 0.875rem;
-    border-radius: 9999px;
-    border: 1px solid rgb(203 213 225);
-    color: rgb(71 85 105);
-    transition: all 200ms;
+    border-radius: 0.375rem;
+    border: 1px solid var(--color-slate-200);
+    color: var(--color-slate-600);
+    transition:
+      color 150ms,
+      border-color 150ms,
+      background-color 150ms;
     cursor: pointer;
   }
 
   .filter-btn:hover {
-    background-color: rgb(239 246 255);
-    border-color: rgb(59 130 246);
-    color: rgb(37 99 235);
+    border-color: var(--color-slate-400);
+    color: var(--color-slate-900);
   }
 
-  .filter-btn.active {
-    background-color: rgb(37 99 235);
+  .filter-btn.active,
+  .filter-btn[aria-pressed="true"] {
+    background-color: var(--color-slate-900);
+    border-color: var(--color-slate-900);
     color: white;
-    border-color: rgb(37 99 235);
   }
 
-  .filter-btn[aria-pressed='true'] {
-    background-color: rgb(37 99 235);
-    color: white;
-    border-color: rgb(37 99 235);
+  :global(.dark) .filter-btn {
+    border-color: var(--color-slate-800);
+    color: var(--color-slate-400);
   }
 
-  @media (prefers-color-scheme: dark) {
-    .filter-btn {
-      border-color: rgb(51 65 85);
-      color: rgb(148 163 184);
-    }
+  :global(.dark) .filter-btn:hover {
+    border-color: var(--color-slate-600);
+    color: var(--color-slate-50);
+  }
 
-    .filter-btn:hover {
-      background-color: rgb(30 41 59);
-      border-color: rgb(96 165 250);
-      color: rgb(96 165 250);
-    }
-
-    .filter-btn.active {
-      background-color: rgb(37 99 235);
-      color: white;
-      border-color: rgb(37 99 235);
-    }
+  :global(.dark) .filter-btn.active,
+  :global(.dark) .filter-btn[aria-pressed="true"] {
+    background-color: var(--color-slate-50);
+    border-color: var(--color-slate-50);
+    color: var(--color-slate-900);
   }
 </style>
 

@@ -29,7 +29,9 @@ export default defineConfig({
         },
       ],
   webServer: {
-    command: 'bun run preview',
+    // Astro 7은 AI 에이전트 환경에서 preview를 자동으로 백그라운드 실행함.
+    // --ignore-lock 으로 항상 포그라운드 실행해 Playwright가 프로세스를 관리하게 함.
+    command: 'bun run preview --ignore-lock',
     url: 'http://localhost:4321',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,

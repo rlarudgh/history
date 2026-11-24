@@ -29,3 +29,6 @@ test-results/
 
 # Biome
 .biome/
+
+# Cloudflare wrangler 로컬 캐시
+.wrangler/

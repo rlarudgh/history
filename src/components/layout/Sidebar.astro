@@ -1,0 +1,121 @@
+---
+import { isActivePath, navLinks } from '../../data/navigation';
+import { profile } from '../../data/profile';
+import { socials } from '../../data/socials';
+
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+
+<aside
+  class="hidden lg:flex lg:flex-col sticky top-0 h-screen w-72 shrink-0 px-10 py-12 border-r border-slate-200 dark:border-slate-800"
+  aria-label="사이드바"
+>
+  <a
+    href="/"
+    class="self-start font-mono text-sm font-semibold text-slate-900 dark:text-slate-50 hover:text-accent transition-colors"
+  >
+    kkh.dev
+  </a>
+
+  <div class="mt-10">
+    <p class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">{profile.name}</p>
+    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+      {profile.role} · {profile.careerYears}년차
+    </p>
+  </div>
+
+  <nav class="mt-12" aria-label="주요 메뉴">
+    <ul class="space-y-1">
+      {
+        navLinks.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              data-nav-section={link.section}
+              aria-current={isActivePath(link, pathname) ? 'page' : undefined}
+              class="group flex items-center gap-3 py-1.5 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-50 aria-[current]:text-slate-900 dark:aria-[current]:text-slate-50 transition-colors"
+            >
+              <span
+                class="h-px w-4 bg-slate-300 dark:bg-slate-700 group-hover:w-8 group-hover:bg-slate-900 dark:group-hover:bg-slate-50 group-aria-[current]:w-8 group-aria-[current]:bg-accent transition-all"
+                aria-hidden="true"
+              />
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <div class="mt-auto space-y-6">
+    <ul class="space-y-1.5 text-sm">
+      <li>
+        <a
+          href={`mailto:${socials.email}`}
+          class="text-slate-500 dark:text-slate-400 hover:text-accent transition-colors"
+        >
+          Email
+        </a>
+      </li>
+      <li>
+        <a
+          href={socials.github.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-slate-500 dark:text-slate-400 hover:text-accent transition-colors"
+        >
+          GitHub ↗
+        </a>
+      </li>
+      <li>
+        <a
+          href={socials.linkedin.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-slate-500 dark:text-slate-400 hover:text-accent transition-colors"
+        >
+          LinkedIn ↗
+        </a>
+      </li>
+    </ul>
+    <div class="h-8" aria-hidden="true"></div>
+  </div>
+</aside>
+
+<script>
+  let observer: IntersectionObserver | undefined;
+
+  function initScrollSpy() {
+    observer?.disconnect();
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('a[data-nav-section]'));
+    const sections = links
+      .map((link) => document.getElementById(link.dataset.navSection ?? ''))
+      .filter((el): el is HTMLElement => el !== null);
+
+    if (sections.length === 0) return;
+
+    const setActive = (id: string) => {
+      for (const link of links) {
+        if (link.dataset.navSection === id) {
+          link.setAttribute('aria-current', 'true');
+        } else if (link.getAttribute('aria-current') === 'true') {
+          link.removeAttribute('aria-current');
+        }
+      }
+    };
+
+    observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) setActive(visible[0].target.id);
+      },
+      { rootMargin: '-30% 0px -60% 0px' },
+    );
+
+    for (const section of sections) observer.observe(section);
+  }
+
+  document.addEventListener('astro:page-load', initScrollSpy);
+</script>

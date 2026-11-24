@@ -2,7 +2,7 @@
 
 ## 기술 선택 이유
 
-### Astro v6 (Static Generation)
+### Astro v7 (Static Generation)
 
 **선택 이유**:
 - **Zero JS by default**: 콘텐츠 중심 포트폴리오에 최적화

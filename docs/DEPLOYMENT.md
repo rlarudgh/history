@@ -50,6 +50,29 @@ GitHub Actions (CI)
 |------|------|
 | `NODE_VERSION` | `22.12.0` |
 
+### 설정 파일
+
+저장소에 포함된 배포 관련 설정 파일입니다.
+
+| 파일 | 역할 |
+|------|------|
+| `public/_headers` | 응답 HTTP 헤더 설정 (보안 헤더 등). 빌드 시 `dist/`로 복사됨 |
+
+**wrangler 설정**: 저장소에 `wrangler.toml`을 두지 않습니다. `@astrojs/cloudflare` 어댑터가 빌드 시
+`dist/server/wrangler.json`을 생성하며, Pages 형식의 `wrangler.toml`(`pages_build_output_dir`)이 있으면
+어댑터 설정과 충돌해 빌드가 실패합니다(`The name 'ASSETS' is reserved in Pages projects`).
+
+- 빌드 결과: `dist/client`(정적 파일) + `dist/server`(블로그 SSR 워커)
+
+**`public/_headers`** (Cloudflare Pages 형식):
+
+```
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+```
+
 ### GitHub Actions
 
 **파일**: `.github/workflows/ci.yml`

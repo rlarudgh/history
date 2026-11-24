@@ -26,7 +26,7 @@
 
 | Category | Technology |
 |----------|-----------|
-| Framework | [Astro v6](https://astro.build) (Static Generation) |
+| Framework | [Astro v7](https://astro.build) (Static + Cloudflare SSR for blog) |
 | Language | [TypeScript](https://www.typescriptlang.org) |
 | Styling | [Tailwind CSS v4](https://tailwindcss.com) |
 | Content | Astro Content Collections + MDX |

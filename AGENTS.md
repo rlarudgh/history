@@ -6,7 +6,7 @@
 
 ## 기술 스택
 
-- **Framework**: Astro v6 (정적 출력)
+- **Framework**: Astro v7 (정적 출력 + 블로그만 Cloudflare SSR)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS v4
 - **Content**: Astro Content Collections + MDX
@@ -22,22 +22,29 @@
 ```
 src/
   components/
-    ui/         # 재사용 가능한 UI 컴포넌트 (Button, Tag, Card 등)
-    layout/     # 레이아웃 컴포넌트 (Header, Footer)
-    sections/   # 페이지 섹션 컴포넌트 (Hero, AboutSummary 등)
+    ui/         # 재사용 UI (Terminal, ProjectRow, SectionHeader, Tag, TechBadge 등)
+    layout/     # 레이아웃 (Sidebar=데스크탑 고정, Header=모바일 전용, Footer)
+    sections/   # 홈 섹션 (Hero 인터랙티브 터미널, About, Experience, Skills, Projects, Workflow, Contact)
   content/
     projects/   # 프로젝트 MDX 콘텐츠
   data/
     experiences.ts  # 경력/학력 데이터
+    navigation.ts   # 사이드바/모바일 메뉴 공용 내비 링크
+    workflow.ts     # "AI와 일하는 방식" 섹션 문구·사례 (수치는 빌드 시 저장소 파일에서 계산)
   layouts/
-    Layout.astro    # 공통 레이아웃
+    Layout.astro    # 공통 레이아웃 (좌측 고정 사이드바 + 본문)
   pages/
-    index.astro     # 랜딩
-    about.astro     # 소개
-    projects.astro  # 프로젝트 목록
+    index.astro     # 홈 (단일 페이지: 소개·경력·기술·프로젝트·연락처)
     projects/
+      index.astro   # 프로젝트 목록
       [slug].astro  # 프로젝트 상세
-    contact.astro   # 연락처
+    blog/           # 블로그
+  # /about, /contact 는 astro.config.mjs redirects로 홈 섹션(/#about, /#contact)에 연결
+  scripts/
+    terminal.ts     # 터미널 명령어 해석기 (DOM과 분리된 순수 로직)
+    terminal-ui.ts  # Terminal.astro 브라우저 동작 ([data-terminal] 단위로 마운트)
+  utils/
+    terminalData.ts # 터미널 기본 데이터 생성 (프로필·프로젝트)
   styles/
     global.css      # Tailwind + 전역 스타일
 ```

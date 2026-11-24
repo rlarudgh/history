@@ -1,0 +1,96 @@
+---
+/**
+ * 인터랙티브 zsh 터미널.
+ *
+ * 사용 예:
+ *   <Terminal />                                   // 기본 데이터 + 기본 인트로
+ *   <Terminal intro={['ls projects']} height="h-64" introKey="projects" />
+ *   <Terminal data={customData} intro={[]} />      // 인트로 없이 바로 입력
+ *
+ * 한 페이지에 여러 개를 둘 수 있으며, 각 인스턴스는 독립적으로 동작한다.
+ */
+import type { TerminalData } from '../../scripts/terminal';
+import { getTerminalData } from '../../utils/terminalData';
+
+interface Props {
+  /** 명령어가 참조할 데이터 (생략 시 프로필·프로젝트로 생성) */
+  data?: TerminalData;
+  /** 자동 재생할 명령어 목록 (빈 배열이면 인트로 없이 바로 입력) */
+  intro?: string[];
+  /** 인트로 재생 여부를 세션별로 기억할 키 (터미널마다 다르게 지정) */
+  introKey?: string;
+  /** 상단 바 제목 */
+  title?: string;
+  /** 출력 영역 높이 (Tailwind 클래스) */
+  height?: string;
+  class?: string;
+}
+
+const {
+  data,
+  intro = ['whoami', 'cat role.txt', 'cat about.txt', 'ls skills'],
+  introKey = 'default',
+  title = '~/kkh.dev — zsh',
+  height = 'h-[24rem]',
+  class: className,
+} = Astro.props;
+
+const terminalData = data ?? (await getTerminalData());
+
+// </script> 주입 방지를 위해 '<' 이스케이프
+const terminalJson = JSON.stringify(terminalData).replace(/</g, '\\u003c');
+
+// label-input 연결용 고유 id
+const inputId = `terminal-input-${introKey}-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<div
+  data-terminal
+  data-intro={JSON.stringify(intro)}
+  data-intro-key={introKey}
+  class:list={[
+    'overflow-hidden bg-slate-900 rounded-lg border border-slate-800 focus-within:border-slate-600 transition-colors',
+    className,
+  ]}
+>
+  <div class="flex items-center justify-between px-4 py-2.5 border-b border-slate-800">
+    <div class="flex items-center gap-1.5" aria-hidden="true">
+      <span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span>
+    </div>
+    <span class="font-mono text-xs text-slate-500">{title}</span>
+    <span class="w-10 font-mono text-[10px] text-right text-slate-600" aria-hidden="true">help</span>
+  </div>
+
+  <div
+    data-terminal-body
+    class:list={['overflow-y-auto p-5 sm:p-6 font-mono text-sm leading-relaxed cursor-text', height]}
+  >
+    <div data-terminal-output role="log" aria-live="polite" aria-label="터미널 출력" class="space-y-1"></div>
+    <form data-terminal-form class="flex items-center gap-2 mt-1" autocomplete="off">
+      <span class="text-blue-400 shrink-0" aria-hidden="true">$</span>
+      <label for={inputId} class="sr-only">터미널 명령어 입력 (help 입력 시 명령어 목록)</label>
+      <input
+        id={inputId}
+        data-terminal-input
+        type="text"
+        readonly
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        enterkeyhint="send"
+        class="flex-1 min-w-0 p-0 bg-transparent border-0 text-base sm:text-sm text-slate-200 caret-slate-300 outline-none focus:outline-none focus-visible:outline-none"
+      />
+    </form>
+  </div>
+
+  <script type="application/json" data-terminal-data is:inline set:html={terminalJson} />
+</div>
+
+<script>
+  import { destroyTerminals, initTerminals } from '../../scripts/terminal-ui';
+
+  document.addEventListener('astro:page-load', initTerminals);
+  document.addEventListener('astro:before-swap', destroyTerminals);
+</script>
