@@ -41,11 +41,12 @@ GitHub Actions (CI)
 |------|-----|
 | Framework | Astro |
 | Build command | `bun run build` |
-| Build output directory | `dist/client` ⚠️ `dist` 아님 |
+| Build output directory | `dist/client` (저장소의 `wrangler.toml`이 이 값을 강제함) |
 | Root directory | `/` |
 
-> ⚠️ 출력 디렉토리를 `dist`로 두면 정적 파일이 `/client/...` 아래로 올라가 CSS가 깨지고,
-> `dist/server`(서버 번들)까지 공개 URL로 노출됩니다. 반드시 `dist/client`로 지정하세요.
+> ⚠️ 출력 디렉토리가 `dist`면 정적 파일이 `/client/...` 아래로 올라가 CSS가 깨지고,
+> `dist/server`(서버 번들)까지 공개 URL로 노출됩니다. 그래서 `wrangler.toml`의
+> `pages_build_output_dir`로 `dist/client`를 고정합니다(대시보드 설정보다 우선).
 > Pages에서는 블로그(SSR, `dist/server`)가 동작하지 않으므로, 블로그까지 쓰려면 Cloudflare **Workers**로
 > 배포합니다: `bun run build && bunx wrangler deploy --config dist/server/wrangler.json`
 
@@ -62,11 +63,13 @@ GitHub Actions (CI)
 
 | 파일 | 역할 |
 |------|------|
-| `public/_headers` | 응답 HTTP 헤더 설정 (보안 헤더 등). 빌드 시 `dist/`로 복사됨 |
+| `wrangler.toml` | **Pages 전용.** 출력 디렉토리를 `dist/client`로 고정 |
+| `wrangler.worker.jsonc` | **Astro 어댑터 전용** (`astro.config.mjs`의 `cloudflare({ configPath })`) |
+| `public/_headers` | 응답 HTTP 헤더 설정 (보안 헤더 등). 빌드 시 `dist/client/`로 복사됨 |
 
-**wrangler 설정**: 저장소에 `wrangler.toml`을 두지 않습니다. `@astrojs/cloudflare` 어댑터가 빌드 시
-`dist/server/wrangler.json`을 생성하며, Pages 형식의 `wrangler.toml`(`pages_build_output_dir`)이 있으면
-어댑터 설정과 충돌해 빌드가 실패합니다(`The name 'ASSETS' is reserved in Pages projects`).
+**wrangler 설정을 두 파일로 나눈 이유**: 어댑터가 Pages 형식 설정(`pages_build_output_dir`)을 읽으면
+`The name 'ASSETS' is reserved in Pages projects` 오류로 빌드가 실패합니다. 그래서 어댑터에는
+`configPath`로 Workers 형식 파일을 따로 지정하고, `wrangler.toml`은 Pages 배포 설정만 담습니다.
 
 - 빌드 결과: `dist/client`(정적 파일) + `dist/server`(블로그 SSR 워커)
 

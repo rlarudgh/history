@@ -11,7 +11,8 @@ export default defineConfig({
   site: 'https://kkh-log.pages.dev',
   // 기본은 정적(prerender). 블로그 페이지만 `prerender = false`로 SSR(Cloudflare) 처리.
   output: 'static',
-  adapter: cloudflare(),
+  // Pages 설정(wrangler.toml)과 분리하기 위해 어댑터 전용 설정 파일을 사용
+  adapter: cloudflare({ configPath: './wrangler.worker.jsonc' }),
 
   // Astro 7 기본값('jsx')은 인라인 요소 사이 줄바꿈 공백을 제거함 → 기존 렌더링 유지
   compressHTML: true,
