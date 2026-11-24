@@ -4,6 +4,19 @@
 /* Dark mode variant */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Design tokens: 단일 포인트 컬러(blue) + slate 무채색 */
+@theme {
+  --color-accent: var(--color-blue-700);
+  --color-accent-strong: var(--color-blue-800);
+  --color-accent-soft: var(--color-blue-50);
+}
+
+.dark {
+  --color-accent: var(--color-blue-400);
+  --color-accent-strong: var(--color-blue-300);
+  --color-accent-soft: color-mix(in oklab, var(--color-blue-400) 12%, transparent);
+}
+
 /* Custom base styles */
 body {
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -11,9 +24,31 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+::selection {
+  background-color: var(--color-blue-100);
+  color: var(--color-slate-900);
+}
+
+.dark ::selection {
+  background-color: var(--color-blue-900);
+  color: var(--color-slate-50);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 /* Smooth scroll */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 4.5rem;
+}
+
+@media (min-width: 64rem) {
+  html {
+    scroll-padding-top: 2.5rem;
+  }
 }
 
 /* Line clamp utilities */
@@ -29,4 +64,18 @@ html {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+  }
 }

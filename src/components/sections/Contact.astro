@@ -1,0 +1,81 @@
+---
+import { socials } from '../../data/socials';
+import SectionHeader from '../ui/SectionHeader.astro';
+
+const copyItems = [
+  { label: 'Email', value: socials.email, href: `mailto:${socials.email}` },
+  { label: 'Phone', value: socials.phone, href: `tel:${socials.phone.replaceAll('-', '')}` },
+];
+
+const linkItems = [
+  { label: 'GitHub', value: socials.github.display, href: socials.github.url },
+  { label: 'LinkedIn', value: socials.linkedin.display, href: socials.linkedin.url },
+];
+---
+
+<section id="contact" aria-labelledby="contact-heading" class="pt-24" data-aos="fade-up">
+  <SectionHeader label="05 / Contact" title="연락처" id="contact-heading">
+    <p class="mt-4 text-slate-600 dark:text-slate-400">
+      새로운 프로젝트나 협업 제안이 있으시면 편하게 연락주세요.
+    </p>
+  </SectionHeader>
+
+  <ul class="border-t border-slate-200 dark:border-slate-800">
+    {
+      copyItems.map((item) => (
+        <li class="grid grid-cols-[5.5rem_1fr_auto] sm:grid-cols-[10.5rem_1fr_auto] gap-x-6 items-center py-4 border-b border-slate-200 dark:border-slate-800">
+          <span class="font-mono text-xs text-slate-500 dark:text-slate-400">{item.label}</span>
+          <a href={item.href} class="min-w-0 truncate text-slate-900 dark:text-slate-50 hover:text-accent transition-colors">
+            {item.value}
+          </a>
+          <button
+            type="button"
+            data-copy={item.value}
+            aria-label={`${item.label} 복사`}
+            class="px-2.5 py-1 font-mono text-xs text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800 rounded-md hover:text-slate-900 dark:hover:text-slate-50 hover:border-slate-400 dark:hover:border-slate-600 transition-colors"
+          >
+            copy
+          </button>
+        </li>
+      ))
+    }
+    {
+      linkItems.map((item) => (
+        <li class="grid grid-cols-[5.5rem_1fr_auto] sm:grid-cols-[10.5rem_1fr_auto] gap-x-6 items-center py-4 border-b border-slate-200 dark:border-slate-800">
+          <span class="font-mono text-xs text-slate-500 dark:text-slate-400">{item.label}</span>
+          <a
+            href={item.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="min-w-0 truncate text-slate-900 dark:text-slate-50 hover:text-accent transition-colors"
+          >
+            {item.value}
+          </a>
+          <span class="px-2.5 font-mono text-xs text-slate-400" aria-hidden="true">↗</span>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<script>
+  function initCopyButtons() {
+    for (const el of document.querySelectorAll<HTMLButtonElement>('[data-copy]')) {
+      if (el.dataset.bound) continue;
+      el.dataset.bound = 'true';
+      el.addEventListener('click', async () => {
+        const text = el.dataset.copy;
+        if (!text) return;
+        const toast = (window as Window & { showToast?: (m: string, t?: string) => void }).showToast;
+        try {
+          await navigator.clipboard.writeText(text);
+          toast?.('클립보드에 복사되었습니다', 'success');
+        } catch {
+          toast?.('복사에 실패했습니다', 'error');
+        }
+      });
+    }
+  }
+
+  document.addEventListener('astro:page-load', initCopyButtons);
+</script>

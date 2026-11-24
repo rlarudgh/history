@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { isMobileViewport, openNavIfMobile } from './helpers';
 
 test.describe('다크모드 기능', () => {
   test.beforeEach(async ({ page }) => {
@@ -38,25 +39,19 @@ test.describe('다크모드 기능', () => {
     await toggle.click();
     await expect(checkbox).toBeChecked();
 
-    // 모바일인 경우 메뉴 열기
-    const viewport = page.viewportSize();
-    const isMobile = viewport && viewport.width < 768;
+    await openNavIfMobile(page);
 
-    if (isMobile) {
-      await page.getByRole('button', { name: '메뉴 열기' }).click();
-    }
-
-    // About 페이지로 이동
-    await page.getByRole('link', { name: 'About' }).click();
-    await expect(page).toHaveURL('/about');
+    // Projects 페이지로 이동
+    await page.getByRole('link', { name: 'Projects' }).click();
+    await expect(page).toHaveURL('/projects');
 
     // 다크모드 유지 확인
     const htmlElement = page.locator('html');
     await expect(htmlElement).toHaveClass(/dark/);
 
     // 토글 버튼 상태도 유지되어야 함
-    const aboutPageCheckbox = page.getByRole('checkbox', { name: '테마 전환' });
-    await expect(aboutPageCheckbox).toBeChecked();
+    const darkPageCheckbox = page.getByRole('checkbox', { name: '테마 전환' });
+    await expect(darkPageCheckbox).toBeChecked();
   });
 
   test('페이지 전환 후 라이트모드 상태가 유지되어야 함', async ({ page }) => {
@@ -66,16 +61,10 @@ test.describe('다크모드 기능', () => {
     const checkbox = page.getByRole('checkbox', { name: '테마 전환' });
     await expect(checkbox).not.toBeChecked();
 
-    // 모바일인 경우 메뉴 열기
-    const viewport = page.viewportSize();
-    const isMobile = viewport && viewport.width < 768;
-
-    if (isMobile) {
-      await page.getByRole('button', { name: '메뉴 열기' }).click();
-    }
+    await openNavIfMobile(page);
 
     // Projects 페이지로 이동
-    await page.getByRole('link', { name: 'Project' }).click();
+    await page.getByRole('link', { name: 'Projects' }).click();
     await expect(page).toHaveURL('/projects');
 
     // 라이트모드 유지 확인
@@ -88,10 +77,7 @@ test.describe('다크모드 기능', () => {
   });
 
   test('다크모드 상태에서 여러 페이지 전환 시 상태 유지', async ({ page }) => {
-    const viewport = page.viewportSize();
-    const isMobile = viewport && viewport.width < 768;
-
-    test.skip(isMobile, '모바일에서는 복잡한 다중 페이지 전환 테스트가 불안정함');
+    test.skip(isMobileViewport(page), '모바일에서는 복잡한 다중 페이지 전환 테스트가 불안정함');
 
     await page.goto('/');
 
@@ -103,22 +89,22 @@ test.describe('다크모드 기능', () => {
 
     const htmlElement = page.locator('html');
 
-    // About 페이지로 이동
-    await page.getByRole('link', { name: 'About' }).click();
-    await expect(page).toHaveURL('/about');
-    await expect(htmlElement).toHaveClass(/dark/);
-
     // Projects 페이지로 이동
-    await page.getByRole('link', { name: 'Project' }).click();
+    await page.getByRole('link', { name: 'Projects' }).click();
     await expect(page).toHaveURL('/projects');
     await expect(htmlElement).toHaveClass(/dark/);
 
-    // Contact 페이지로 이동
-    await page.getByRole('link', { name: 'Contact' }).click();
-    await expect(page).toHaveURL('/contact');
+    // 프로젝트 상세로 이동
+    await page.locator('#projects-grid article a').first().click();
+    await expect(page).toHaveURL(/\/projects\/.+/);
     await expect(htmlElement).toHaveClass(/dark/);
 
-    // 홉으로 돌아오기
+    // 홈 Contact 섹션으로 이동
+    await page.getByRole('link', { name: 'Contact' }).click();
+    await expect(page).toHaveURL('/#contact');
+    await expect(htmlElement).toHaveClass(/dark/);
+
+    // 홈으로 돌아오기
     await page.getByRole('link', { name: 'kkh.dev' }).click();
     await expect(page).toHaveURL('/');
     await expect(htmlElement).toHaveClass(/dark/);

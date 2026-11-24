@@ -1,122 +1,85 @@
 ---
-import ThemeToggle from '../ui/ThemeToggle.astro';
+import { isActivePath, navLinks } from '../../data/navigation';
 
-const navLinks = [
-  { href: '/about', label: 'About' },
-  { href: '/projects', label: 'Project' },
-  { href: '/blog', label: 'Blog' },
-  { href: '/contact', label: 'Contact' },
-];
-
-const currentPath = Astro.url.pathname;
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 
 <header
-  class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 dark:bg-slate-900/80 dark:border-slate-800 transition-colors duration-300"
+  class="lg:hidden sticky top-0 z-40 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800"
 >
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
-      <a
-        href="/"
-        class="text-xl font-bold text-slate-900 hover:text-blue-600 dark:text-slate-50 dark:hover:text-blue-400 transition-colors"
-      >
+  <div class="flex items-center justify-between h-14 px-4 sm:px-6">
+    <a
+      href="/"
+      class="font-mono text-sm font-semibold text-slate-900 dark:text-slate-50 hover:text-accent transition-colors"
+    >
       kkh.dev
-      </a>
+    </a>
 
-      <div class="flex items-center gap-4">
-        <nav class="hidden md:flex items-center gap-8">
-          {
-            navLinks.map((link) => (
-              <a
-                href={link.href}
-                class:list={[
-                  'text-sm font-medium transition-colors hover:text-blue-600 dark:hover:text-blue-400',
-                  currentPath === link.href
-                    ? 'text-blue-600 dark:text-blue-400'
-                    : 'text-slate-600 dark:text-slate-400',
-                ]}
-              >
-                {link.label}
-              </a>
-            ))
-          }
-        </nav>
+    {/* ThemeToggle은 Layout에서 이 자리(우측, 메뉴 버튼 왼쪽)에 고정 배치됨 */}
+    <button
+      id="mobile-menu-btn"
+      type="button"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      aria-label="메뉴 열기"
+      class="p-2 -mr-2 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-50"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16" />
+      </svg>
+    </button>
+  </div>
 
-        <ThemeToggle />
-
-        <button
-          id="mobile-menu-btn"
-          class="md:hidden p-2 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-50"
-          aria-label="메뉴 열기"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <div id="mobile-menu" class="hidden md:hidden pb-4">
-      <nav class="flex flex-col gap-2">
-        {
-          navLinks.map((link) => (
+  <nav id="mobile-menu" class="hidden border-t border-slate-200 dark:border-slate-800" aria-label="모바일 메뉴">
+    <ul class="px-4 sm:px-6 py-3">
+      {
+        navLinks.map((link) => (
+          <li>
             <a
               href={link.href}
-              class:list={[
-                'px-3 py-2 text-sm font-medium rounded-md transition-colors',
-                currentPath === link.href
-                  ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-50',
-              ]}
+              aria-current={isActivePath(link, pathname) ? 'page' : undefined}
+              class="flex items-center justify-between py-2.5 text-sm text-slate-600 dark:text-slate-400 aria-[current]:text-slate-900 dark:aria-[current]:text-slate-50 aria-[current]:font-semibold"
             >
               {link.label}
+              <span class="font-mono text-xs text-slate-400" aria-hidden="true">→</span>
             </a>
-          ))
-        }
-      </nav>
-    </div>
-  </div>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
 </header>
 
 <script>
-  const btn = document.getElementById('mobile-menu-btn');
-  const menu = document.getElementById('mobile-menu');
+  function initMobileMenu() {
+    const btn = document.getElementById('mobile-menu-btn');
+    const menu = document.getElementById('mobile-menu');
+    if (!btn || !menu || btn.dataset.bound) return;
+    btn.dataset.bound = 'true';
 
-  function toggleMenu() {
-    menu?.classList.toggle('hidden');
-    const isOpen = !menu?.classList.contains('hidden');
-    btn?.setAttribute('aria-expanded', String(isOpen));
+    const setOpen = (open: boolean) => {
+      menu.classList.toggle('hidden', !open);
+      btn.setAttribute('aria-expanded', String(open));
+    };
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setOpen(menu.classList.contains('hidden'));
+    });
+
+    // 앵커 이동 시 메뉴 닫기
+    menu.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) setOpen(false);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!menu.contains(e.target as Node) && !btn.contains(e.target as Node)) setOpen(false);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    });
   }
 
-  function closeMenu() {
-    menu?.classList.add('hidden');
-    btn?.setAttribute('aria-expanded', 'false');
-  }
-
-  btn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleMenu();
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!menu?.classList.contains('hidden') && !menu?.contains(e.target as Node) && !btn?.contains(e.target as Node)) {
-      closeMenu();
-    }
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !menu?.classList.contains('hidden')) {
-      closeMenu();
-    }
-  });
+  document.addEventListener('astro:page-load', initMobileMenu);
 </script>

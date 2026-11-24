@@ -1,0 +1,146 @@
+---
+import { certifications } from '../../data/certifications';
+import { experiences } from '../../data/experiences';
+import SectionHeader from '../ui/SectionHeader.astro';
+
+const workExps = experiences.filter((e) => e.type === 'work');
+const eduExps = experiences.filter((e) => e.type === 'education');
+---
+
+<section id="experience" aria-labelledby="experience-heading" class="pt-24" data-aos="fade-up">
+  <SectionHeader label="02 / Experience" title="경력" id="experience-heading" />
+
+  <ol class="border-t border-slate-200 dark:border-slate-800">
+    {
+      workExps.map((exp, index) => (
+        <li class="exp-item grid sm:grid-cols-[10.5rem_1fr] gap-x-6 gap-y-1 py-6 border-b border-slate-200 dark:border-slate-800">
+          <p class="font-mono text-xs leading-6 text-slate-500 dark:text-slate-400">{exp.period}</p>
+          <div>
+            <button
+              type="button"
+              class="exp-toggle group flex items-start justify-between gap-4 w-full text-left"
+              aria-expanded={index === 0 ? 'true' : 'false'}
+              aria-controls={`exp-detail-${exp.id}`}
+            >
+              <span>
+                <span class="block text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50 group-hover:text-accent transition-colors">
+                  {exp.title}
+                </span>
+                <span class="block text-sm text-slate-500 dark:text-slate-400">{exp.organization}</span>
+              </span>
+              <span
+                class="exp-chevron mt-1 font-mono text-sm text-slate-400 transition-transform duration-200"
+                aria-hidden="true"
+              >
+                +
+              </span>
+            </button>
+
+            {exp.description && (
+              <p class="mt-3 text-sm text-slate-600 dark:text-slate-400">{exp.description}</p>
+            )}
+
+            <div
+              id={`exp-detail-${exp.id}`}
+              class="exp-detail grid transition-[grid-template-rows] duration-300 ease-out"
+              data-open={index === 0 ? 'true' : 'false'}
+              style="grid-template-rows: 0fr"
+            >
+              <div class="overflow-hidden min-h-0">
+                {exp.details && (
+                  <ul class="mt-4 space-y-1.5 text-sm text-slate-600 dark:text-slate-400">
+                    {exp.details.map((item) => (
+                      <li class="flex gap-3">
+                        <span class="text-slate-300 dark:text-slate-700" aria-hidden="true">—</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {exp.tags && (
+                  <p class="mt-4 font-mono text-xs text-slate-500 dark:text-slate-400">
+                    {exp.tags.join(' · ')}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+
+  <h3 class="mt-16 mb-4 font-mono text-xs tracking-widest uppercase text-slate-500 dark:text-slate-400">
+    학력
+  </h3>
+  <ul class="border-t border-slate-200 dark:border-slate-800">
+    {
+      eduExps.map((exp) => (
+        <li class="grid sm:grid-cols-[10.5rem_1fr] gap-x-6 gap-y-1 py-5 border-b border-slate-200 dark:border-slate-800">
+          <p class="font-mono text-xs leading-6 text-slate-500 dark:text-slate-400">{exp.period}</p>
+          <div>
+            <p class="font-semibold text-slate-900 dark:text-slate-50">{exp.title}</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400">{exp.organization}</p>
+            {exp.description && <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">{exp.description}</p>}
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+
+  {
+    certifications.length > 0 && (
+      <>
+        <h3 class="mt-16 mb-4 font-mono text-xs tracking-widest uppercase text-slate-500 dark:text-slate-400">
+          자격증
+        </h3>
+        <ul class="border-t border-slate-200 dark:border-slate-800">
+          {certifications.map((cert) => (
+            <li class="grid sm:grid-cols-[10.5rem_1fr] gap-x-6 gap-y-1 py-5 border-b border-slate-200 dark:border-slate-800">
+              <p class="font-mono text-xs leading-6 text-slate-500 dark:text-slate-400">{cert.date}</p>
+              <div>
+                <p class="font-semibold text-slate-900 dark:text-slate-50">{cert.name}</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400">
+                  {cert.issuer}
+                  {cert.description && <span> {cert.description}</span>}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </>
+    )
+  }
+</section>
+
+<script>
+  function initExperienceAccordion() {
+    const toggles = document.querySelectorAll<HTMLButtonElement>('.exp-toggle');
+
+    for (const btn of toggles) {
+      if (btn.dataset.bound) continue;
+      btn.dataset.bound = 'true';
+
+      const panelId = btn.getAttribute('aria-controls');
+      const panel = panelId ? document.getElementById(panelId) : null;
+      if (!panel) continue;
+
+      const chevron = btn.querySelector<HTMLElement>('.exp-chevron');
+
+      const setOpen = (open: boolean) => {
+        btn.setAttribute('aria-expanded', String(open));
+        panel.style.gridTemplateRows = open ? '1fr' : '0fr';
+        if (chevron) chevron.style.transform = open ? 'rotate(45deg)' : 'rotate(0deg)';
+      };
+
+      // 초기 상태 (첫 항목은 펼침)
+      setOpen(panel.dataset.open === 'true');
+
+      btn.addEventListener('click', () => {
+        setOpen(btn.getAttribute('aria-expanded') !== 'true');
+      });
+    }
+  }
+
+  document.addEventListener('astro:page-load', initExperienceAccordion);
+</script>

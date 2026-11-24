@@ -1,0 +1,33 @@
+---
+import { experiences } from '../../data/experiences';
+import { profile } from '../../data/profile';
+import SectionHeader from '../ui/SectionHeader.astro';
+
+const workCount = experiences.filter((e) => e.type === 'work').length;
+
+const facts = [
+  { label: '경력', value: `${profile.careerYears}년+` },
+  { label: '근무', value: `${workCount}곳` },
+  { label: '프로젝트', value: `${profile.projectCount}개` },
+  { label: '기술', value: `${profile.skillCount}+` },
+];
+---
+
+<section id="about" aria-labelledby="about-heading" class="pt-24" data-aos="fade-up">
+  <SectionHeader label="01 / About" title="안녕하세요!" id="about-heading" />
+
+  <div class="space-y-4 text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-400">
+    {profile.introductions.map((text) => <p>{text}</p>)}
+  </div>
+
+  <dl class="grid grid-cols-2 sm:grid-cols-4 mt-10 border-y border-slate-200 dark:border-slate-800 divide-x divide-slate-200 dark:divide-slate-800">
+    {
+      facts.map((fact) => (
+        <div class="py-5 px-4 first:pl-0">
+          <dt class="font-mono text-xs text-slate-500 dark:text-slate-400">{fact.label}</dt>
+          <dd class="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">{fact.value}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>

@@ -22,22 +22,23 @@
 ```
 src/
   components/
-    ui/         # 재사용 가능한 UI 컴포넌트 (Button, Tag, Card 등)
-    layout/     # 레이아웃 컴포넌트 (Header, Footer)
-    sections/   # 페이지 섹션 컴포넌트 (Hero, AboutSummary 등)
+    ui/         # 재사용 UI (ProjectRow, SectionHeader, Tag, TechBadge 등)
+    layout/     # 레이아웃 (Sidebar=데스크탑 고정, Header=모바일 전용, Footer)
+    sections/   # 홈 섹션 (Hero 터미널, About, Experience, Skills, Projects, Contact)
   content/
     projects/   # 프로젝트 MDX 콘텐츠
   data/
     experiences.ts  # 경력/학력 데이터
+    navigation.ts   # 사이드바/모바일 메뉴 공용 내비 링크
   layouts/
-    Layout.astro    # 공통 레이아웃
+    Layout.astro    # 공통 레이아웃 (좌측 고정 사이드바 + 본문)
   pages/
-    index.astro     # 랜딩
-    about.astro     # 소개
-    projects.astro  # 프로젝트 목록
+    index.astro     # 홈 (단일 페이지: 소개·경력·기술·프로젝트·연락처)
     projects/
+      index.astro   # 프로젝트 목록
       [slug].astro  # 프로젝트 상세
-    contact.astro   # 연락처
+    blog/           # 블로그
+  # /about, /contact 는 astro.config.mjs redirects로 홈 섹션(/#about, /#contact)에 연결
   styles/
     global.css      # Tailwind + 전역 스타일
 ```

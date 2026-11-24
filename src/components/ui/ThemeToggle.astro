@@ -3,7 +3,7 @@
 
 <label
   id="theme-toggle"
-  class="relative inline-flex items-center cursor-pointer w-14 h-8 rounded-full bg-slate-200 dark:bg-slate-700 transition-colors duration-300"
+  class="relative inline-flex items-center cursor-pointer w-14 h-8 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors duration-300"
   aria-label="테마 전환"
 >
   <input type="checkbox" class="sr-only peer" id="theme-checkbox" />
@@ -12,7 +12,7 @@
   <span class="absolute inset-0 flex items-center justify-between px-1.5 pointer-events-none">
     {/* Sun icon - left side */}
     <svg
-      class="w-4 h-4 text-amber-500 opacity-100 dark:opacity-0 transition-opacity duration-300"
+      class="w-4 h-4 text-slate-500 opacity-100 dark:opacity-0 transition-opacity duration-300"
       fill="currentColor"
       viewBox="0 0 20 20"
     >
@@ -35,11 +35,11 @@
   
   {/* Slider thumb */}
   <span
-    class="absolute left-0.5 top-0.5 w-7 h-7 bg-white rounded-full shadow-md transform transition-transform duration-300 translate-x-0 dark:translate-x-6 flex items-center justify-center"
+    class="absolute left-0.5 top-0.5 w-7 h-7 bg-white rounded-full border border-slate-300 dark:border-slate-600 transform transition-transform duration-300 translate-x-0 dark:translate-x-6 flex items-center justify-center"
   >
     {/* Thumb icon - sun (light mode) */}
     <svg
-      class="w-4 h-4 text-amber-500 dark:hidden"
+      class="w-4 h-4 text-slate-500 dark:hidden"
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
@@ -54,7 +54,7 @@
     
     {/* Thumb icon - moon (dark mode) */}
     <svg
-      class="w-4 h-4 text-indigo-600 hidden dark:block"
+      class="w-4 h-4 text-slate-700 hidden dark:block"
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
