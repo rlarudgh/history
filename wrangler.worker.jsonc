@@ -1,6 +1,0 @@
-// @astrojs/cloudflare 어댑터 전용 설정 (Workers 형식).
-// Pages 설정(wrangler.toml)과 섞이면 "ASSETS is reserved in Pages projects" 오류로 빌드가 실패하므로 분리한다.
-{
-  "name": "kkh-logs-portfolio",
-  "compatibility_date": "2026-06-23"
-}

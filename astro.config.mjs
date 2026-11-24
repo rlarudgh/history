@@ -11,8 +11,7 @@ export default defineConfig({
   site: 'https://kkh-log.pages.dev',
   // 기본은 정적(prerender). 블로그 페이지만 `prerender = false`로 SSR(Cloudflare) 처리.
   output: 'static',
-  // Pages 설정(wrangler.toml)과 분리하기 위해 어댑터 전용 설정 파일을 사용
-  adapter: cloudflare({ configPath: './wrangler.worker.jsonc' }),
+  adapter: cloudflare(),
 
   // Astro 7 기본값('jsx')은 인라인 요소 사이 줄바꿈 공백을 제거함 → 기존 렌더링 유지
   compressHTML: true,
@@ -21,6 +20,11 @@ export default defineConfig({
   // 리다이렉트하지 않게 함 (내비·링크는 슬래시 없는 경로 기준)
   build: {
     format: 'file',
+    // Cloudflare Pages는 출력 디렉토리(dist)를 통째로 공개 배포한다.
+    // 정적 파일은 dist/ 바로 아래에 두고, 서버 번들은 dist 밖(dist-server/)에 생성해
+    // CSS 경로가 어긋나거나 서버 코드가 공개되지 않게 한다.
+    client: './',
+    server: '../dist-server/',
   },
 
   // About/Contact는 홈 섹션으로 통합됨

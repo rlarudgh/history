@@ -1,6 +1,0 @@
-# Cloudflare Pages 전용 설정 (대시보드 설정보다 우선 적용됨)
-# 정적 파일은 dist/client 에 생성되므로 이 폴더만 배포한다. (dist/server 는 공개되면 안 됨)
-# Astro 어댑터는 이 파일 대신 wrangler.worker.jsonc 를 사용한다 (astro.config.mjs 의 configPath).
-name = "kkh-log"
-pages_build_output_dir = "dist/client"
-compatibility_date = "2026-06-23"
