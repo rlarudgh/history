@@ -30,18 +30,5 @@ const projects = defineCollection({
   }),
 });
 
-const blog = defineCollection({
-  loader: glob({ pattern: '**/index.md', base: './src/content/blog' }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    pubDate: z.coerce.date(),
-    updatedDate: z.coerce.date().optional(),
-    tags: z.array(z.string()),
-    category: z.string(),
-    draft: z.boolean().default(false),
-    coverImage: z.string().optional(),
-  }),
-});
-
-export const collections = { projects, blog };
+// 블로그 글은 Hololog API(SSR)에서 가져오므로 로컬 콘텐츠 컬렉션을 사용하지 않는다.
+export const collections = { projects };

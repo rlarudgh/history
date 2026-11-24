@@ -18,11 +18,13 @@
     "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^13",
     "@astrojs/mdx": "^5.0.6",
     "@astrojs/sitemap": "^3.7.3",
     "@tailwindcss/vite": "^4.3.0",
     "aos": "^2.3.4",
     "astro": "^6.3.8",
+    "marked": "^18.0.5",
     "simple-icons": "^16.21.0",
     "tailwindcss": "^4.3.0"
   },

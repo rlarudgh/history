@@ -317,11 +317,13 @@ docs/api-reference
 **파일**: `src/data/profile.ts`
 
 ```typescript
+import { calculateCareerYears } from '../utils/career';
+
 export const profile: Profile = {
   name: '김경호',
-  role: '프론트엔드 개발자',
+  role: 'Software Engineer',
   field: 'Fullstack',
-  careerYears: 3,
+  careerYears: calculateCareerYears(), // 회사 경력 기간으로 자동 계산
   projectCount: 7,
   skillCount: 25,
   introductions: [
@@ -330,6 +332,10 @@ export const profile: Profile = {
   ],
 };
 ```
+
+> `careerYears`는 `src/utils/career.ts`의 `calculateCareerYears()`가
+> `experiences.ts`의 `type: 'work'` 항목 기간(겹침 병합)을 합산해 자동 계산합니다.
+> 경력 연차를 바꾸려면 숫자를 직접 고치지 말고 `experiences.ts`의 기간을 수정하세요.
 
 ### 경력/학력 수정
 

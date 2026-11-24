@@ -1,20 +1,36 @@
 ---
-import { getCollection } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
+export const prerender = false;
 
-const allPosts = await getCollection('blog');
-const posts = allPosts
-  .filter((p) => !p.data.draft)
-  .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
+import { env } from 'cloudflare:workers';
+import Layout from '../../layouts/Layout.astro';
+import { getHolologConfig, getPosts, isHolologConfigured } from '../../lib/hololog';
+
+// Astro v6 + Cloudflare: 런타임 바인딩은 cloudflare:workers 의 env 로 읽는다
+const config = getHolologConfig(env as unknown as Record<string, string | undefined>);
+
+let posts: Awaited<ReturnType<typeof getPosts>> = [];
+let errorMessage = '';
+
+if (isHolologConfigured(config)) {
+  try {
+    posts = await getPosts(config);
+  } catch (error) {
+    console.error('[blog] 글 목록을 불러오지 못했습니다.', error);
+    errorMessage = '글을 불러오는 중 문제가 발생했습니다.';
+  }
+} else {
+  errorMessage = '블로그 API가 설정되지 않았습니다.';
+}
 ---
 
 <Layout
   title="블로그 | 포트폴리오"
   description="기술과 개발에 관한 이야기를 기록합니다."
 >
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <div class="mb-12" data-aos="fade-up">
-      <h1 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-50 mb-4">
+  <div>
+    <div class="mb-10">
+      <p class="font-mono text-xs tracking-widest uppercase text-slate-500 dark:text-slate-400">Blog</p>
+      <h1 class="mt-3 mb-4 text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
         블로그
       </h1>
       <p class="text-slate-600 dark:text-slate-400">
@@ -22,39 +38,44 @@ const posts = allPosts
       </p>
     </div>
 
-    <div class="space-y-8">
-      {
-        posts.map((post, index) => (
-          <article class="group" data-aos="fade-up" data-aos-delay={index * 100}>
-            <a
-              href={`/blog/${post.id}`}
-              class="block p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md transition-all"
-            >
-              <div class="flex flex-wrap items-center gap-2 mb-3">
-                <span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400">
-                  {post.data.category}
+    {
+      errorMessage ? (
+        <div class="py-10 border-y border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
+          {errorMessage}
+        </div>
+      ) : posts.length === 0 ? (
+        <div class="py-10 border-y border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400">
+          아직 발행된 글이 없습니다.
+        </div>
+      ) : (
+        <div class="border-t border-slate-200 dark:border-slate-800">
+          {posts.map((post) => (
+            <article class="group border-b border-slate-200 dark:border-slate-800">
+              <a
+                href={`/blog/${post.slug}`}
+                class="grid sm:grid-cols-[10.5rem_1fr] gap-x-6 gap-y-1 py-6"
+              >
+                <span class="font-mono text-xs leading-7 text-slate-500 dark:text-slate-400">
+                    {new Date(post.date).toLocaleDateString('ko-KR')}
                 </span>
-                <span class="text-xs text-slate-500 dark:text-slate-400">
-                  {new Date(post.data.pubDate).toLocaleDateString('ko-KR')}
-                </span>
-              </div>
-              <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                {post.data.title}
-              </h2>
-              <p class="text-slate-600 dark:text-slate-400 text-sm mb-3">
-                {post.data.description}
-              </p>
-              <div class="flex flex-wrap gap-2">
-                {post.data.tags.map((tag) => (
-                  <span class="text-xs text-slate-500 dark:text-slate-400">
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            </a>
-          </article>
-        ))
-      }
-    </div>
+                <div>
+                <h2 class="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50 mb-1 group-hover:text-accent transition-colors">
+                  {post.title}
+                </h2>
+                <p class="text-slate-600 dark:text-slate-400 text-sm mb-3">
+                  {post.description}
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  {post.tags.map((tag) => (
+                    <span class="font-mono text-xs text-slate-500 dark:text-slate-400">#{tag}</span>
+                  ))}
+                </div>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      )
+    }
   </div>
 </Layout>
